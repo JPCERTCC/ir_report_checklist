@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>インシデント調査報告書チェックリスト</title>
+  <style>
+    :root {
+      --color-key-50: #e8f1fe;
+      --color-key-100: #d9e6ff;
+      --color-key-200: #c5d7fb;
+      --color-key-900: #0017c1;
+      --color-key-1000: #00118f;
+      --color-key-1200: #000060;
+      --color-neutral-white: #ffffff;
+      --color-neutral-gray-50: #f2f2f2;
+      --color-neutral-gray-200: #cccccc;
+      --color-neutral-gray-600: #666666;
+      --color-neutral-gray-900: #1a1a1a;
+      --color-focus: #ffd43d;
+      --font-family-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { font-family: var(--font-family-sans); }
+    body { margin: 0; background: var(--color-neutral-white); color: var(--color-neutral-gray-900); font-size: 1rem; line-height: 1.7; }
+    a { color: var(--color-key-1000); text-decoration: underline; text-decoration-thickness: 0.0625rem; text-underline-offset: 0.1875rem; }
+    a:visited { color: #5109ad; }
+    a:hover { color: var(--color-key-900); text-decoration-thickness: 0.1875rem; }
+    :focus-visible { outline: 0.25rem solid #000; outline-offset: 0.125rem; border-radius: 0.25rem; box-shadow: 0 0 0 0.125rem var(--color-focus); }
+    .skip-link { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10; padding: 0.5rem 0.75rem; background: var(--color-focus); color: #000; font-weight: 700; transform: translateY(-150%); }
+    .skip-link:focus { transform: translateY(0); }
+    .page { width: min(1200px, calc(100% - 4rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+    .hero { border-top: 0.5rem solid var(--color-key-900); padding: 2rem 0 2.5rem; }
+    h1, h2, h3 { color: var(--color-neutral-gray-900); font-weight: 700; }
+    h1 { max-width: 24em; margin: 0; font-size: clamp(2rem, 5vw, 2.8125rem); line-height: 1.4; letter-spacing: 0.01em; }
+    h2 { margin: 0; font-size: 1.625rem; line-height: 1.5; letter-spacing: 0.02em; }
+    h3 { margin: 2rem 0 0.5rem; font-size: 1.25rem; line-height: 1.6; }
+    .lead { width: 100%; margin: 1.25rem 0 0; font-size: 1.0625rem; }
+    .resources { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; padding: 2rem 0; border-top: 1px solid var(--color-neutral-gray-200); }
+    .card { display: flex; flex-direction: column; min-width: 0; padding: 1.5rem; border: 1px solid var(--color-neutral-gray-200); border-radius: 0.5rem; background: var(--color-neutral-white); }
+    .card h2 { margin: 1rem 0 0.5rem; }
+    .card p { margin: 0 0 1rem; }
+    .tag { width: fit-content; padding: 0.125rem 0.5rem; border: 1px solid var(--color-key-900); border-radius: 0.25rem; color: var(--color-key-1000); font-size: 0.875rem; font-weight: 700; line-height: 1.5; }
+    .meta { color: var(--color-neutral-gray-600); font-size: 0.9375rem; }
+    .button-group { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; padding-top: 0.5rem; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-width: 6rem; min-height: 3rem; padding: 0.5rem 1rem; border: 0.25rem double transparent; border-radius: 0.5rem; background: var(--color-key-900); color: var(--color-neutral-white); font-weight: 700; letter-spacing: 0.02em; text-align: center; text-decoration: none; }
+    .button:visited { color: var(--color-neutral-white); }
+    .button:hover { background: var(--color-key-1000); color: var(--color-neutral-white); text-decoration: underline; text-decoration-thickness: 0.0625rem; }
+    .button:active { background: var(--color-key-1200); }
+    .button.secondary { border: 1px solid currentcolor; background: var(--color-neutral-white); color: var(--color-key-900); }
+    .button.secondary:visited { color: var(--color-key-900); }
+    .button.secondary:hover { background: var(--color-key-200); color: var(--color-key-1000); }
+    .notes { width: 100%; margin-top: 2.5rem; padding-top: 1.25rem; border-top: 0.25rem solid var(--color-key-900); }
+    .notes h2 { margin-bottom: 1rem; }
+    .notes p, .notes ol, .notes ul { margin: 0 0 1rem; }
+    .notes li + li { margin-top: 0.5rem; }
+    .license-logo { display: inline-block; margin-top: 0.25rem; }
+    .license-logo img { display: block; width: 88px; height: 31px; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--color-neutral-gray-200); color: var(--color-neutral-gray-600); font-size: 0.875rem; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 2rem, 1200px); padding-top: 1.5rem; }
+      .resources { grid-template-columns: 1fr; gap: 1rem; }
+      .button-group { display: grid; grid-template-columns: 1fr; }
+      .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <div class="page">
+    <header class="hero">
+      <h1>インシデント調査報告書チェックリスト</h1>
+      <p class="lead">
+        本チェックリストは、インシデント調査を依頼する組織と、調査報告書を作成する担当者の双方が共通認識を持ちながら調査を進めることで、調査を円滑に進めることをサポートすることを目的とした補助ツールです。チェックリストの内容は、インシデント調査の一般的な手順や考慮すべき事項を網羅していますが、すべての状況に適用できるわけではありません。必要に応じて、組織の方針や調査対象の特性に合わせてカスタマイズしてご利用ください。<br>
+        なお、本確認ポイントはマルウェア感染などをともなうネットワーク侵害を対象としており、内部不正を疑うインシデントなどの場合は適用できない項目があります。
+      </p>
+    </header>
+
+    <main id="main-content" class="resources" aria-label="チェックリスト一覧">
+      <article class="card">
+        <span class="tag">ユーザー向け</span>
+        <h2>{{CUSTOMER_TITLE}}</h2>
+        <p>インシデント調査を依頼する組織がベンダーと調査方針の合意を行う際や、受領した報告書の最低限の確認に使用します。</p>
+        <div class="button-group">
+          <a class="button" href="./checklist_for_customer.html">HTMLを開く</a>
+          <a class="button secondary" href="./markdown/checklist_for_customer.md">Markdownを開く</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="tag">レポーター向け</span>
+        <h2>{{REPORTER_TITLE}}</h2>
+        <p>インシデント調査を担当する者が、報告書を作成する際に使用します。</p>
+        <div class="button-group">
+          <a class="button" href="./checklist_for_reporter.html">HTMLを開く</a>
+          <a class="button secondary" href="./markdown/checklist_for_reporter.md">Markdownを開く</a>
+        </div>
+      </article>
+
+      {{PDF_CARD}}
+    </main>
+
+    <section class="notes" aria-labelledby="usage-notes-title">
+      <h2 id="usage-notes-title">チェックリストの使い方</h2>
+      <h3>ユーザー向け</h3>
+      <p>- ユーザー向けチェックリストは、インシデント調査を依頼する組織が、調査を担当する組織やベンダーとの合意、および受領した報告書の確認に使用します。</p>
+      <ol>
+        <li>調査開始前に「調査方針の合意」を確認し、調査目的、優先事項、調査対象、調査手法、報告形式、期限などについて合意します。</li>
+        <li>報告書を受領した際は「調査結果のレビュー」を使用し、合意した調査目的への回答、調査対象、根拠、判断できない事項、追加調査、再発防止策などが記載されているか確認します。</li>
+        <li>報告書の各章をより詳しく確認する場合は、「報告書の詳細確認ポイント」を参考にします。</li>
+      </ol>
+      <p>- 本チェックリストは、インシデント調査や報告書の完全な正しさを検証するものではありません。インシデントの内容や契約内容によっては、該当しない項目や、追加で確認すべき項目があります。</p>
+      <p>- 調査そのものの技術的な品質、調査範囲や調査手法の妥当性、エビデンスの十分性、再発防止策の妥当性などを評価するには、専門的な知識が必要です。
+        技術的なレビューに懸念がある場合は、JPCERT/CCなどの専門機関や専門家への相談を検討してください。</p>
+      <p>- 既存のインシデント対応サービスやSOCサービスを利用している場合は、契約書、サービス仕様書、SLAなどで調査範囲や報告事項があらかじめ定められていることがあります。
+        チェックリストと契約内容を比較し、追加対応が必要な項目については、調査を担当する組織やベンダーと協議してください。</p>
+      <h3>レポーター向け</h3>
+      <p>- レポーター向けチェックリストは、インシデント調査を担当する者が、調査開始前の合意、証拠保全、調査結果の整理、報告書の作成および最終確認を行う際に使用します。</p>
+      <p>- すべての項目がすべてのインシデントに適用されるわけではありません。
+        インシデントの種類、調査目的、契約内容、取得できたエビデンス、組織の方針に応じて確認項目を追加または調整してください。</p>
+    </section>
+
+    <section class="notes" aria-labelledby="license-notes-title">
+      <h2 id="license-notes-title">ライセンス</h2>
+      <p>本ドキュメントは クリエイティブ・コモンズ4.0の表示 - 継承（CC BY-SA 4.0）の元で公開します。</p>
+      <a class="license-logo" href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja" rel="license" aria-label="クリエイティブ・コモンズ 表示 - 継承 4.0 国際ライセンスを表示">
+        <img src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" alt="クリエイティブ・コモンズ 表示 - 継承 4.0 国際">
+      </a>
+    </section>
+
+    <section class="notes" aria-labelledby="disclaimer-notes-title">
+      <h2 id="disclaimer-notes-title">免責事項</h2>
+      <p>本ドキュメントに記載されている情報により生じるいかなる損失または損害に対して、JPCERT/CCは責任を負うものではありません。
+        ドキュメントの改変は自由ですが改変がなされた場合、改変された部分についても、もちろんJPCERT/CCは責任を負いません。
+        また、改変する場合は、コンテンツの品質向上の契機とするため、ご連絡下されば幸いです。</p>
+    </section>
+
+    <section class="notes" aria-labelledby="acknowledgements-notes-title">
+      <h2 id="acknowledgements-notes-title">謝辞</h2>
+      <p>本ドキュメントの作成にあたり、ご協力いただいた皆様に感謝いたします。</p>
+      <ul>
+        <li>伊藤忠サイバー＆インテリジェンス株式会社</li>
+        <li>NTTセキュリティ・ジャパン株式会社</li>
+        <li>株式会社インターネットイニシアティブ</li>
+        <li>株式会社サイバーディフェンス研究所</li>
+        <li>デロイト トーマツ サイバー合同会社</li>
+        <li>東京海上ディーアール株式会社</li>
+        <li>トレンドマイクロ株式会社</li>
+        <li>日本IBM株式会社</li>
+        <li>パロアルトネットワークス株式会社</li>
+        <li>フューチャーセキュアウェイブ株式会社</li>
+        <li>富士通株式会社</li>
+        <li>株式会社日立システムズ</li>
+        <li>株式会社マクニカ</li>
+        <li>株式会社ラック</li>
+      </ul>
+    </section>
+
+    <footer>© 2026 JPCERT/CC</footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+/*
+ * incident_report_pdf.css
+ * インシデント調査報告書 PDF提出用スタイル
+ *
+ * 想定用途:
+ * - Pandoc + HTML/PDFエンジン(WeasyPrint / Vivliostyle / Prince / paged.js / Chrome印刷)
+ * - A4縦、業務報告書、表・コードブロック・Mermaid図を含むMarkdown
+ *
+ * 注意:
+ * - Mermaid記法はCSSだけでは図に変換されません。
+ *   本CSSと併用するPDF提出用Markdownでは、概要図をSVG画像に差し替えます。
+ */
+
+:root {
+  --font-sans: "Noto Sans JP", "Noto Sans CJK JP", -apple-system, BlinkMacSystemFont, "Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  --font-mono: "Noto Sans Mono CJK JP", "Source Han Code JP", "Ricty Diminished", "Consolas", "Menlo", monospace;
+
+  --color-key-50: #e8f1fe;
+  --color-key-100: #d9e6ff;
+  --color-key-200: #c5d7fb;
+  --color-key-900: #0017c1;
+  --color-key-1000: #00118f;
+  --color-key-1200: #000060;
+  --color-neutral-white: #ffffff;
+  --color-neutral-gray-50: #f2f2f2;
+  --color-neutral-gray-100: #e6e6e6;
+  --color-neutral-gray-200: #cccccc;
+  --color-neutral-gray-600: #666666;
+  --color-neutral-gray-900: #1a1a1a;
+  --color-text: var(--color-neutral-gray-900);
+  --color-muted: var(--color-neutral-gray-600);
+  --color-border: var(--color-neutral-gray-200);
+  --color-border-strong: var(--color-neutral-gray-600);
+  --color-heading: var(--color-neutral-gray-900);
+  --color-accent: var(--color-key-900);
+  --color-accent-dark: var(--color-key-1000);
+  --color-accent-light: var(--color-key-50);
+  --color-table-head: var(--color-neutral-gray-50);
+  --color-table-alt: var(--color-neutral-white);
+  --color-code-bg: var(--color-neutral-gray-50);
+  /* 補足・ログは色で強調しすぎず、報告書らしい無彩色で整理する */
+  --color-note-bg: #f7f7f7;
+  --color-note-border: #8c8c8c;
+  --color-log-bg: #f4f4f4;
+  --color-log-border: #a6a6a6;
+
+  --body-font-size: 10.5pt;
+  --small-font-size: 8.8pt;
+  --code-font-size: 8.2pt;
+  --table-font-size: 8.4pt;
+  --line-height: 1.65;
+}
+
+/* ------------------------------------------------------------
+ * Page settings
+ * ------------------------------------------------------------ */
+/* TLP v2.0 (FIRST) に従い、TLP標示を各ページのヘッダー/フッターに右寄せで表示する。
+ * TLP:CLEAR は文字 (#FFFFFF) / 黒背景 (#000000)、12pt以上。
+ * margin box 全体が黒くならないよう、テキスト幅に近い最小限のSVGラベルで描画する。
+ */
+@page {
+  size: A4;
+  margin: 18mm 15mm 18mm 15mm;
+
+  @top-left {
+    content: "インシデント調査報告書";
+    font-family: var(--font-sans);
+    font-size: 8pt;
+    color: var(--color-muted);
+  }
+
+  @top-right {
+    content: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27148pt%27%20height=%2715pt%27%20viewBox=%270%200%20148%2015%27%3E%3Crect%20x=%270%27%20y=%270%27%20width=%27148%27%20height=%2715%27%20fill=%27%23000000%27/%3E%3Ctext%20x=%2774%27%20y=%2711.4%27%20font-family=%27Arial,%20Helvetica,%20sans-serif%27%20font-size=%2712%27%20font-weight=%27700%27%20fill=%27%23FFFFFF%27%20text-anchor=%27middle%27%3ETLP:CLEAR%3C/text%3E%3C/svg%3E");
+    background: none;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    vertical-align: middle;
+    text-align: right;
+  }
+
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: var(--font-sans);
+    font-size: 8pt;
+    color: var(--color-muted);
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* 手動の改ページHTMLを尊重する */
+  div[style*="page-break-after"] {
+    page-break-after: always;
+    break-after: page;
+  }
+}
+
+@media screen {
+  body {
+    max-width: 210mm;
+    margin: 24px auto;
+    padding: 18mm 15mm;
+    background: #ffffff;
+    box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.1), 0 1px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  html {
+    background: var(--color-neutral-gray-100);
+  }
+}
+
+/* ------------------------------------------------------------
+ * Base typography
+ * ------------------------------------------------------------ */
+html {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  font-size: var(--body-font-size);
+  line-height: var(--line-height);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  font-size: var(--body-font-size);
+  line-height: var(--line-height);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+p {
+  margin: 0 0 0.75em 0;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+em,
+i {
+  font-style: normal;
+  font-weight: 600;
+}
+
+a {
+  color: var(--color-accent-dark);
+  text-decoration: underline;
+  text-decoration-thickness: 0.0625rem;
+  text-underline-offset: 0.1875rem;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 1.4em 0;
+}
+
+/* ------------------------------------------------------------
+ * Headings
+ * ------------------------------------------------------------ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-heading);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.5;
+  page-break-after: avoid;
+  break-after: avoid;
+  overflow-wrap: break-word;
+}
+
+h1 {
+  font-size: 22pt;
+  letter-spacing: 0.01em;
+  text-align: center;
+  margin: 26mm 0 12mm 0;
+  padding-bottom: 7mm;
+  border-bottom: 4px solid var(--color-accent);
+}
+
+h2 {
+  font-size: 16pt;
+  margin: 1.8em 0 0.9em 0;
+  padding: 0 0 0.35em 0;
+  border-left: 0;
+  border-bottom: 2px solid var(--color-accent);
+  background: transparent;
+}
+
+h3 {
+  font-size: 13pt;
+  margin: 1.5em 0 0.65em 0;
+  padding: 0 0 0.3em 0;
+  border-left: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+h4 {
+  font-size: 10.8pt;
+  margin: 1.15em 0 0.45em 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
+h5,
+h6 {
+  font-size: 10pt;
+  margin: 0.9em 0 0.35em 0;
+}
+
+/* 主要章は原則として新しいページから開始する */
+h2#sec-0,
+h2#sec-1,
+h2#sec-2,
+h2#sec-3,
+h2#sec-4,
+h2#sec-5,
+h2#appendix-a,
+h2#appendix-b,
+h2#appendix-c {
+  break-before: page;
+  page-break-before: always;
+}
+
+h2#toc {
+  break-before: auto;
+  page-break-before: auto;
+}
+
+/* 見出し直後で表やコードだけが次ページに飛びにくいようにする */
+h2 + p,
+h3 + p,
+h4 + p,
+h2 + table,
+h3 + table,
+h4 + table,
+h2 + pre,
+h3 + pre,
+h4 + pre {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+
+/* Pandoc --standalone で生成されるタイトルブロックは、本文側のH1と重複しやすいため非表示にする */
+#title-block-header {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+ * Cover and document metadata
+ * ------------------------------------------------------------ */
+body > table:first-of-type {
+  width: 78%;
+  margin: 10mm auto 8mm auto;
+  font-size: 10pt;
+}
+
+body > table:first-of-type th,
+body > table:first-of-type td {
+  padding: 0.55em 0.75em;
+}
+
+body > table:first-of-type th:first-child,
+body > table:first-of-type td:first-child {
+  width: 28%;
+  background: var(--color-table-head);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------
+ * Table of contents
+ * ------------------------------------------------------------ */
+#toc + ul,
+h2#toc + ul {
+  margin-top: 1em;
+  padding-left: 0;
+  list-style: none;
+  font-size: 10pt;
+}
+
+#toc + ul ul,
+h2#toc + ul ul {
+  margin: 0.25em 0 0.4em 1.2em;
+  padding-left: 0.8em;
+  list-style: none;
+  border-left: 1px solid var(--color-border);
+}
+
+#toc + ul li,
+h2#toc + ul li {
+  margin: 0.25em 0;
+  line-height: 1.5;
+}
+
+#toc + ul a,
+h2#toc + ul a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------
+ * Lists
+ * ------------------------------------------------------------ */
+ul,
+ol {
+  margin: 0.4em 0 0.85em 1.35em;
+  padding-left: 0.5em;
+}
+
+li {
+  margin: 0.18em 0;
+}
+
+li > p {
+  margin: 0.2em 0;
+}
+
+/* ------------------------------------------------------------
+ * Tables
+ * ------------------------------------------------------------ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0 1.1em 0;
+  font-size: var(--table-font-size);
+  line-height: 1.45;
+  table-layout: auto;
+  page-break-inside: auto;
+  break-inside: auto;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tfoot {
+  display: table-footer-group;
+}
+
+tr {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+th,
+td {
+  border: 1px solid var(--color-border);
+  padding: 0.42em 0.5em;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+th {
+  background: var(--color-table-head);
+  color: var(--color-text);
+  font-weight: 700;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) td {
+  background: var(--color-table-alt);
+}
+
+/* 優先度など、短い列が読みやすいようにする */
+th:first-child {
+  white-space: nowrap;
+}
+
+/* 長い表は印刷時に詰めすぎない */
+@media print {
+  table {
+    font-size: var(--table-font-size);
+  }
+
+  th,
+  td {
+    padding: 0.36em 0.44em;
+  }
+}
+
+/* ------------------------------------------------------------
+ * Code blocks, inline code, logs
+ * ------------------------------------------------------------ */
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+}
+
+code {
+  font-size: 0.92em;
+  background: var(--color-neutral-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.08em 0.28em;
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  margin: 0.75em 0 1em 0;
+  padding: 0.85em 1em;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: var(--code-font-size);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: inherit;
+  white-space: pre-wrap;
+}
+
+/* 説明用ブロック: 報告書作成上の補足・注意書き
+ * 色付きのカード表現を避け、本文に自然になじむ無彩色の注記として扱う。
+ */
+pre.note-block,
+pre.note-block code {
+  background: var(--color-note-bg);
+}
+
+pre.note-block {
+  margin: 0.75em 0 1em 0;
+  padding: 0.65em 0.85em;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 9pt;
+  line-height: 1.55;
+}
+
+pre.note-block code {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* ログ用コードブロック: 実際のログ・コマンド実行痕跡・証跡例
+ * 緑系の強調色を使わず、紙の報告書で一般的なモノクロの抜粋表示にする。
+ */
+pre.log-block,
+pre.log-block code {
+  background: var(--color-log-bg);
+}
+
+pre.log-block {
+  margin: 0.75em 0 1em 0;
+  padding: 0.75em 0.9em;
+  border: 1px solid var(--color-log-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: 7.9pt;
+  line-height: 1.42;
+}
+
+/* 後方互換: class付けされていないtextブロックは説明用として扱う */
+pre.text,
+pre.language-text {
+  background: var(--color-note-bg);
+  border: 0;
+  border-left: 3px solid var(--color-note-border);
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--font-sans);
+  font-size: 9pt;
+  line-height: 1.55;
+}
+
+pre.text code,
+pre.language-text code,
+pre code.language-text {
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* ------------------------------------------------------------
+ * Mermaid and figures
+ * ------------------------------------------------------------ */
+.mermaid {
+  margin: 1em auto 1.25em auto;
+  padding: 0.75em;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.mermaid svg,
+figure svg,
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+figure {
+  margin: 1em 0 1.25em 0;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+figcaption {
+  margin-top: 0.4em;
+  font-size: var(--small-font-size);
+  color: var(--color-muted);
+}
+
+/* Mermaidがpre > codeのまま出力された場合の最低限の見え方 */
+pre code.language-mermaid {
+  font-size: 7.8pt;
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------------
+ * Notes and blockquotes
+ * ------------------------------------------------------------ */
+blockquote {
+  margin: 0.85em 0;
+  padding: 0.65em 0.9em;
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-text);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------
+ * Utility classes for optional Markdown use
+ * ------------------------------------------------------------ */
+.pagebreak,
+.page-break {
+  break-after: page;
+  page-break-after: always;
+}
+
+.no-break,
+.keep-together {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.small {
+  font-size: var(--small-font-size);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.confidential-box {
+  border: 2px solid var(--color-accent-dark);
+  padding: 0.8em 1em;
+  background: var(--color-key-50);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------
+ * Print quality tweaks
+ * ------------------------------------------------------------ */
+* {
+  box-sizing: border-box;
+}
+
+/* URLが長い場合のはみ出し防止 */
+a,
+code,
+pre,
+td,
+th {
+  overflow-wrap: anywhere;
+}
+
+/* 章末の孤立行を少し抑制 */
+p,
+li,
+td {
+  orphans: 2;
+  widows: 2;
+}
+
+
+/* ------------------------------------------------------------
+ * PDF-ready diagram
+ * ------------------------------------------------------------ */
+img.overview-diagram,
+#fig-incident-overview {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0.7em auto 0.6em auto;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+p:has(img.overview-diagram) {
+  text-align: center;
+  margin: 0.8em 0 0.2em 0;
+}
+
+/* Pandocが画像属性をimg側に付与しない環境向け */
+p > img[src$="incident_overview_sequence.svg"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0.7em auto 0.6em auto;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+/* Mermaidコードブロックが残った場合は、図化漏れとして目立たせる */
+pre code.language-mermaid {
+  background: #fff1f2;
+  border-left-color: #be123c;
+}
+
+/* ------------------------------------------------------------
+ * Landscape figure page for uploaded PNG overview/timeline
+ * ------------------------------------------------------------ */
+@page landscape {
+  size: A4 landscape;
+  margin: 12mm 12mm 12mm 12mm;
+
+  @top-left {
+    content: "インシデント調査報告書";
+    font-family: var(--font-sans);
+    font-size: 8pt;
+    color: var(--color-muted);
+  }
+
+  @top-right {
+    content: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27148pt%27%20height=%2715pt%27%20viewBox=%270%200%20148%2015%27%3E%3Crect%20x=%270%27%20y=%270%27%20width=%27148%27%20height=%2715%27%20fill=%27%23000000%27/%3E%3Ctext%20x=%2774%27%20y=%2711.4%27%20font-family=%27Arial,%20Helvetica,%20sans-serif%27%20font-size=%2712%27%20font-weight=%27700%27%20fill=%27%23FFC000%27%20text-anchor=%27middle%27%3ETLP:AMBER%2BSTRICT%3C/text%3E%3C/svg%3E");
+    background: none;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    vertical-align: middle;
+    text-align: right;
+  }
+
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: var(--font-sans);
+    font-size: 8pt;
+    color: var(--color-muted);
+  }
+}
+
+.landscape-figure-page {
+  page: landscape;
+  break-before: page;
+  break-after: page;
+  page-break-before: always;
+  page-break-after: always;
+  display: block;
+}
+
+.timeline-figure {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.timeline-figure figcaption {
+  margin-top: 3mm;
+  font-size: 9pt;
+  color: var(--color-muted);
+}
+
+img.timeline-diagram,
+.timeline-figure img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 168mm;
+  object-fit: contain;
+  margin: 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+p > img[src$="incident_forensic_report_template_ja_timeline.png"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0.7em auto 0.6em auto;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+/* ------------------------------------------------------------
+ * Wide evidence tables
+ * ------------------------------------------------------------ */
+@page wide {
+  size: A4 landscape;
+  margin: 11mm 10mm 12mm 10mm;
+
+  @top-left {
+    content: "インシデント調査報告書";
+    font-family: var(--font-sans);
+    font-size: 8pt;
+    color: var(--color-muted);
+  }
+
+  @top-right {
+    content: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27148pt%27%20height=%2715pt%27%20viewBox=%270%200%20148%2015%27%3E%3Crect%20x=%270%27%20y=%270%27%20width=%27148%27%20height=%2715%27%20fill=%27%23000000%27/%3E%3Ctext%20x=%2774%27%20y=%2711.4%27%20font-family=%27Arial,%20Helvetica,%20sans-serif%27%20font-size=%2712%27%20font-weight=%27700%27%20fill=%27%23FFC000%27%20text-anchor=%27middle%27%3ETLP:AMBER%2BSTRICT%3C/text%3E%3C/svg%3E");
+    background: none;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    vertical-align: middle;
+    text-align: right;
+  }
+
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: var(--font-sans);
+    font-size: 8pt;
+    color: var(--color-muted);
+  }
+}
+
+.wide-page {
+  page: wide;
+  break-before: page;
+  break-after: page;
+  page-break-before: always;
+  page-break-after: always;
+}
+
+.wide-page h4 {
+  margin-top: 0;
+}
+
+.wide-page table {
+  font-size: 6.8pt;
+  line-height: 1.22;
+  table-layout: fixed;
+  margin: 0.55em 0 0.8em 0;
+}
+
+.wide-page th,
+.wide-page td {
+  padding: 0.26em 0.3em;
+}
+
+.wide-page table:first-of-type th:nth-child(1),
+.wide-page table:first-of-type td:nth-child(1) { width: 6%; }
+.wide-page table:first-of-type th:nth-child(2),
+.wide-page table:first-of-type td:nth-child(2) { width: 15%; }
+.wide-page table:first-of-type th:nth-child(3),
+.wide-page table:first-of-type td:nth-child(3) { width: 15%; }
+.wide-page table:first-of-type th:nth-child(4),
+.wide-page table:first-of-type td:nth-child(4) { width: 17%; }
+.wide-page table:first-of-type th:nth-child(5),
+.wide-page table:first-of-type td:nth-child(5) { width: 10%; }
+.wide-page table:first-of-type th:nth-child(6),
+.wide-page table:first-of-type td:nth-child(6) { width: 10%; }
+.wide-page table:first-of-type th:nth-child(7),
+.wide-page table:first-of-type td:nth-child(7) { width: 9%; }
+.wide-page table:first-of-type th:nth-child(8),
+.wide-page table:first-of-type td:nth-child(8) { width: 18%; }
+
+.wide-page code {
+  font-size: 0.86em;
+  padding: 0.04em 0.16em;
+}
+
+
+/* ------------------------------------------------------------
+ * Figure and table captions
+ * ------------------------------------------------------------ */
+.table-caption,
+.figure-caption,
+figcaption {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.45;
+}
+
+.table-caption {
+  margin: 1.1em auto 0.35em auto;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.table-caption + table {
+  margin-top: 0.25em;
+}
+
+.figure-caption,
+figcaption {
+  display: block;
+  margin: 0.45em auto 1.0em auto;
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+/* Mermaid図の直後に置く図タイトルも中央揃えにする */
+.mermaid + .figure-caption,
+pre.mermaid + .figure-caption,
+pre + .figure-caption,
+p:has(img) + .figure-caption {
+  text-align: center;
+}
+
+/* 表題と表がページをまたぎにくいようにする */
+.table-caption,
+.table-caption + table thead {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* 目次直後や表紙の表題も詰まりすぎないよう調整する */
+body > .table-caption:first-of-type {
+  margin-top: 8mm;
+}
+
+.wide-page .table-caption {
+  font-size: 8pt;
+  margin: 0.6em auto 0.25em auto;
+}
+
+.disk-image-table table,
+.overview-legend-table table {
+  width: 100%;
+  table-layout: fixed;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* ------------------------------------------------------------
+ * Appendix tables: balanced column widths
+ * ------------------------------------------------------------
+ * 付録A/Bの一覧表では、左端の種別・端末名列が広くなりすぎると、
+ * 値・確認内容・推奨対応の列が窮屈になる。
+ * 表ごとに用途が異なるため、Markdown側のDiv classと組み合わせて
+ * 列幅を個別指定する。
+ */
+.ioc-table table,
+.account-table table,
+.compromised-host-table table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ioc-table th,
+.ioc-table td,
+.account-table th,
+.account-table td,
+.compromised-host-table th,
+.compromised-host-table td {
+  vertical-align: top;
+}
+
+/* 汎用指定 th:first-child { white-space: nowrap; } により左列が広がるため、
+ * 付録の一覧表では折り返しを許可する。
+ */
+.ioc-table th:first-child,
+.ioc-table td:first-child,
+.account-table th:first-child,
+.account-table td:first-child,
+.compromised-host-table th:first-child,
+.compromised-host-table td:first-child {
+  white-space: normal;
+}
+
+/* 表A-1/A-2: 種別列は短いため圧縮し、IoC値と概要に幅を配分する。 */
+.ioc-table table th:nth-child(1),
+.ioc-table table td:nth-child(1) { width: 13%; }
+.ioc-table table th:nth-child(2),
+.ioc-table table td:nth-child(2) { width: 36%; }
+.ioc-table table th:nth-child(3),
+.ioc-table table td:nth-child(3) { width: 51%; }
+
+/* IoC値はIPアドレス、ファイルパス、ハッシュ値が混在するため、
+ * 値列内のインラインコードだけは自然に折り返す。
+ */
+.ioc-table td:nth-child(2) code {
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* 表B-1: アカウント列を抑え、確認内容と推奨対応に幅を配分する。 */
+.account-table table th:nth-child(1),
+.account-table table td:nth-child(1) { width: 23%; }
+.account-table table th:nth-child(2),
+.account-table table td:nth-child(2) { width: 10%; }
+.account-table table th:nth-child(3),
+.account-table table td:nth-child(3) { width: 34%; }
+.account-table table th:nth-child(4),
+.account-table table td:nth-child(4) { width: 13%; }
+.account-table table th:nth-child(5),
+.account-table table td:nth-child(5) { width: 20%; }
+
+/* 表B-2: 端末・サーバー列が広がりやすいため抑え、確認内容・推奨対応を広げる。 */
+.compromised-host-table table th:nth-child(1),
+.compromised-host-table table td:nth-child(1) { width: 15%; }
+.compromised-host-table table th:nth-child(2),
+.compromised-host-table table td:nth-child(2) { width: 9%; }
+.compromised-host-table table th:nth-child(3),
+.compromised-host-table table td:nth-child(3) { width: 32%; }
+.compromised-host-table table th:nth-child(4),
+.compromised-host-table table td:nth-child(4) { width: 15%; }
+.compromised-host-table table th:nth-child(5),
+.compromised-host-table table td:nth-child(5) { width: 29%; }
+
+/* 付録表は本文より少しだけ小さくし、表内余白も抑える。 */
+.ioc-table table,
+.account-table table,
+.compromised-host-table table {
+  font-size: 8.1pt;
+  line-height: 1.38;
+}
+
+.ioc-table th,
+.ioc-table td,
+.account-table th,
+.account-table td,
+.compromised-host-table th,
+.compromised-host-table td {
+  padding: 0.34em 0.42em;
+}
+
+/* Pandoc がMarkdownの区切り行から生成する colgroup width を上書きする。 */
+.ioc-table table col:nth-child(1) { width: 13% !important; }
+.ioc-table table col:nth-child(2) { width: 36% !important; }
+.ioc-table table col:nth-child(3) { width: 51% !important; }
+
+.account-table table col:nth-child(1) { width: 23% !important; }
+.account-table table col:nth-child(2) { width: 10% !important; }
+.account-table table col:nth-child(3) { width: 34% !important; }
+.account-table table col:nth-child(4) { width: 13% !important; }
+.account-table table col:nth-child(5) { width: 20% !important; }
+
+.compromised-host-table table col:nth-child(1) { width: 15% !important; }
+.compromised-host-table table col:nth-child(2) { width: 9% !important; }
+.compromised-host-table table col:nth-child(3) { width: 32% !important; }
+.compromised-host-table table col:nth-child(4) { width: 15% !important; }
+.compromised-host-table table col:nth-child(5) { width: 29% !important; }
+
+
+/*
+ * Specific balancing for report body tables.
+ * These classes avoid the appendix table rules affecting unrelated tables.
+ */
+.target-assets-table table,
+.containment-table table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.target-assets-table th,
+.target-assets-table td,
+.containment-table th,
+.containment-table td {
+  font-size: 8.2pt;
+  line-height: 1.35;
+  padding: 4px 7px;
+  vertical-align: top;
+}
+
+/* 表1-4 調査対象機器一覧 */
+.target-assets-table table col:nth-child(1) { width: 11% !important; }
+.target-assets-table table col:nth-child(2) { width: 15% !important; }
+.target-assets-table table col:nth-child(3) { width: 26% !important; }
+.target-assets-table table col:nth-child(4) { width: 14% !important; }
+.target-assets-table table col:nth-child(5) { width: 17% !important; }
+.target-assets-table table col:nth-child(6) { width: 17% !important; }
+.target-assets-table table th:nth-child(1),
+.target-assets-table table td:nth-child(1) { width: 11%; }
+.target-assets-table table th:nth-child(2),
+.target-assets-table table td:nth-child(2) { width: 15%; }
+.target-assets-table table th:nth-child(3),
+.target-assets-table table td:nth-child(3) { width: 26%; }
+.target-assets-table table th:nth-child(4),
+.target-assets-table table td:nth-child(4) { width: 14%; }
+.target-assets-table table th:nth-child(5),
+.target-assets-table table td:nth-child(5) { width: 17%; }
+.target-assets-table table th:nth-child(6),
+.target-assets-table table td:nth-child(6) { width: 17%; }
+
+/* Avoid single-character Japanese wrapping in the role column. */
+.target-assets-table table td:nth-child(2),
+.target-assets-table table th:nth-child(2) {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 表5-1 封じ込め・復旧対応 */
+.containment-table table col:nth-child(1) { width: 7% !important; }
+.containment-table table col:nth-child(2) { width: 24% !important; }
+.containment-table table col:nth-child(3) { width: 18% !important; }
+.containment-table table col:nth-child(4) { width: 51% !important; }
+.containment-table table th:nth-child(1),
+.containment-table table td:nth-child(1) { width: 7%; }
+.containment-table table th:nth-child(2),
+.containment-table table td:nth-child(2) { width: 24%; }
+.containment-table table th:nth-child(3),
+.containment-table table td:nth-child(3) { width: 18%; }
+.containment-table table th:nth-child(4),
+.containment-table table td:nth-child(4) { width: 51%; }
+
+.containment-table table td:nth-child(3) {
+  font-size: 7.8pt;
+  line-height: 1.35;
+}
+
+.containment-table table td:nth-child(4) {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.target-assets-table,
+.containment-table {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}

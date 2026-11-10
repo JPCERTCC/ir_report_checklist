@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="インシデント調査報告書のサンプルと、報告書作成時に利用できるチェックリストを公開しています。">
+  <title>インシデント調査報告書サンプル</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --text: #17202a;
+      --muted: #5f6b76;
+      --line: #d9e0e7;
+      --accent: #1769aa;
+      --accent-hover: #0f568e;
+      --accent-soft: #e8f2fb;
+      --tag-bg: #eef3f8;
+      --shadow: 0 8px 28px rgba(23, 32, 42, 0.09);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11161c;
+        --panel: #18212a;
+        --text: #edf2f7;
+        --muted: #aeb8c2;
+        --line: #34414d;
+        --accent: #70b7f0;
+        --accent-hover: #9bcdf4;
+        --accent-soft: #18334a;
+        --tag-bg: #202c37;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    a { color: var(--accent); }
+
+    .page {
+      width: min(1080px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: clamp(1.25rem, 3vw, 3rem) 0 4rem;
+    }
+
+    .hero {
+      padding: clamp(1.5rem, 4vw, 3rem);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 0.4rem;
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1.35;
+    }
+
+    .lead {
+      max-width: 52rem;
+      margin: 1rem 0 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .resources {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      padding: 1.5rem;
+      border: 1px solid var(--line);
+      border-radius: 0.85rem;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0.55rem 0 0.6rem;
+      font-size: 1.3rem;
+      line-height: 1.45;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .tag {
+      align-self: flex-start;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .features {
+      margin: 1rem 0 1.25rem;
+      padding-left: 1.25rem;
+      color: var(--muted);
+    }
+
+    .features li + li { margin-top: 0.25rem; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      min-height: 2.75rem;
+      margin-top: auto;
+      padding: 0.55rem 1rem;
+      border: 1px solid var(--accent);
+      border-radius: 0.5rem;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+    }
+
+    .button:hover {
+      border-color: var(--accent-hover);
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: auto;
+    }
+
+    .button-group .button { margin-top: 0; }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .button.secondary:hover {
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+    }
+
+    .button:focus-visible {
+      outline: 3px solid var(--accent-soft);
+      outline-offset: 3px;
+    }
+
+    .notes {
+      margin-top: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--line);
+      border-radius: 0.85rem;
+      background: var(--panel);
+    }
+
+    .notes h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .notes p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .notes p + p { margin-top: 0.55rem; }
+
+    footer {
+      margin-top: 1.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 1rem, 1080px); }
+      .resources { grid-template-columns: 1fr; }
+      .card { padding: 1.25rem; }
+      .button, .button-group { width: 100%; }
+      .button-group .button { flex: 1 1 14rem; }
+    }
+
+    @media print {
+      :root { color-scheme: light; }
+      body { background: #ffffff; color: #000000; }
+      .page { width: 100%; padding: 0; }
+      .hero, .card, .notes { box-shadow: none; }
+      .button {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: #000000;
+        text-decoration: underline;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <p class="eyebrow">JPCERT/CC</p>
+      <h1>インシデント調査報告書サンプル</h1>
+      <p class="lead">
+        インシデント調査報告書の作成・確認に利用できる資料を公開しています。
+        報告書の品質確認に使用するチェックリストと、記載例を示した報告書サンプルを参照できます。
+      </p>
+    </header>
+
+    <main class="resources" aria-label="公開資料">
+      <article class="card">
+        <span class="tag">HTMLチェックリスト</span>
+        <h2>レポーター向けチェックリスト</h2>
+        <p>
+          インシデント調査の開始前の合意事項、証拠保全、調査結果、脅威インテリジェンス、
+          封じ込め・復旧、再発防止策などを確認するためのチェックリストです。
+        </p>
+        <ul class="features">
+          <li>項目ごとにブラウザ上でチェック可能</li>
+          <li>検索、絞り込み、進捗表示に対応</li>
+          <li>結果の保存・読み込み、印刷に対応</li>
+        </ul>
+        <a class="button" href="./dist/">チェックリストを開く</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Markdown</span>
+        <h2>Markdown形式のチェックリスト</h2>
+        <p>
+          チェックリストの原稿をMarkdown形式で参照できます。内容の確認、差分レビュー、
+          ローカルでの編集や再利用に適しています。
+        </p>
+        <ul class="features">
+          <li>ユーザー向けチェックリスト</li>
+          <li>レポーター向けチェックリスト</li>
+          <li>リポジトリのルートにある原稿を直接参照</li>
+        </ul>
+        <div class="button-group">
+          <a class="button secondary" href="./checklist_for_customer.md">ユーザー向けを開く</a>
+          <a class="button secondary" href="./checklist_for_reporter.md">レポーター向けを開く</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="tag">PDF</span>
+        <h2>インシデント調査報告書サンプル</h2>
+        <p>
+          架空のインシデントを題材として、調査概要、エグゼクティブサマリー、
+          調査結果、対応策、IoC、証拠保全記録などの記載例をまとめた資料です。
+        </p>
+        <ul class="features">
+          <li>報告書の章構成と記載例を確認可能</li>
+          <li>調査結果とエビデンスの示し方を掲載</li>
+          <li>PDF形式で閲覧・保存可能</li>
+        </ul>
+        <a class="button" href="./pdf/incident_forensic_report_template_ja.pdf">報告書サンプルを開く</a>
+      </article>
+    </main>
+
+    <section class="notes" aria-labelledby="notes-title">
+      <h2 id="notes-title">利用上の注意</h2>
+      <p>
+        チェックリストの入力内容はブラウザ内に保存され、外部へ送信されません。
+        ブラウザや端末を変更して作業を継続する場合は、チェックリストの「結果を保存」機能を利用してください。
+      </p>
+      <p>
+        報告書サンプルは架空の事例です。資料内に記載された攻撃関連のIPアドレス、ドメイン、URLには直接アクセスしないでください。
+      </p>
+    </section>
+
+    <footer>
+      <p>Incident Forensic Report Sample</p>
+    </footer>
+  </div>
+</body>
+</html>

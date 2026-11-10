@@ -1,0 +1,266 @@
+name: Build report assets and deploy checklist
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'incident_forensic_report_template_ja.md'
+      - 'styles/incident_report_pdf_v5_captions.css'
+      - 'checklist_for_customer.md'
+      - 'checklist_for_reporter.md'
+      - 'scripts/**'
+      - 'templates/**'
+      - 'tests/**'
+      - 'pdf/**'
+      - '.github/workflows/build-report-pdf.yml'
+      - 'assets/**'
+  pull_request:
+    paths:
+      - 'incident_forensic_report_template_ja.md'
+      - 'styles/incident_report_pdf_v5_captions.css'
+      - 'checklist_for_customer.md'
+      - 'checklist_for_reporter.md'
+      - 'scripts/**'
+      - 'templates/**'
+      - 'tests/**'
+      - 'pdf/**'
+      - '.github/workflows/build-report-pdf.yml'
+      - 'assets/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: generated-artifacts-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  INPUT_MD: incident_forensic_report_template_ja.md
+  CSS_FILE: styles/incident_report_pdf_v5_captions.css
+  OUTPUT_DIR: pdf
+  OUTPUT_PDF: incident_forensic_report_template_ja.pdf
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install PDF build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pandoc \
+            weasyprint \
+            fonts-noto-cjk \
+            fonts-noto-color-emoji \
+            fonts-ipafont-gothic \
+            fonts-ipafont-mincho
+
+          npm install -g @mermaid-js/mermaid-cli
+
+      - name: Prepare build directory
+        run: |
+          rm -rf .build
+          mkdir -p .build/mermaid "$OUTPUT_DIR"
+
+          test -f "$INPUT_MD"
+          test -f "$CSS_FILE"
+
+          cat > .build/puppeteer-config.json <<'EOF'
+          {
+            "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+          }
+          EOF
+
+      - name: Render Mermaid diagrams and preprocess Markdown
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import os
+          import re
+          import subprocess
+
+          input_md = Path(os.environ["INPUT_MD"])
+          build_dir = Path(".build")
+          mermaid_dir = build_dir / "mermaid"
+          out_md = build_dir / "report.md"
+          puppeteer_config = build_dir / "puppeteer-config.json"
+
+          text = input_md.read_text(encoding="utf-8")
+          pattern = re.compile(r"```mermaid\s*\n(.*?)\n```", re.DOTALL)
+
+          index = 0
+
+          def replace_mermaid(match):
+              global index
+              index += 1
+
+              mmd = mermaid_dir / f"diagram-{index:03d}.mmd"
+              svg = mermaid_dir / f"diagram-{index:03d}.svg"
+
+              mmd.write_text(match.group(1).strip() + "\n", encoding="utf-8")
+
+              subprocess.run(
+                  [
+                      "mmdc",
+                      "-i", str(mmd),
+                      "-o", str(svg),
+                      "-b", "transparent",
+                      "-p", str(puppeteer_config),
+                  ],
+                  check=True,
+              )
+
+              return (
+                  '<div class="mermaid-diagram">\n'
+                  f'<img src="mermaid/{svg.name}" alt="Mermaid diagram">\n'
+                  '</div>'
+              )
+
+          out_text = pattern.sub(replace_mermaid, text)
+          out_md.write_text(out_text, encoding="utf-8")
+
+          print(f"Rendered {index} Mermaid diagram(s).")
+          PY
+
+      - name: Convert Markdown to HTML
+        run: |
+          cp "$CSS_FILE" .build/report.css
+
+          if pandoc --help | grep -q -- '--embed-resources'; then
+            EMBED_FLAG='--embed-resources'
+          else
+            EMBED_FLAG='--self-contained'
+          fi
+
+          pandoc .build/report.md \
+            --from markdown+raw_html+fenced_code_attributes+link_attributes+fenced_divs \
+            --to html5 \
+            --standalone \
+            $EMBED_FLAG \
+            --css report.css \
+            --metadata title="インシデント調査報告書サンプル" \
+            -o .build/report.html
+
+      - name: Convert HTML to PDF
+        run: |
+          weasyprint .build/report.html "$OUTPUT_DIR/$OUTPUT_PDF"
+
+      - name: Upload generated report PDF
+        uses: actions/upload-artifact@v7
+        with:
+          name: incident-report-pdf
+          path: ${{ env.OUTPUT_DIR }}/${{ env.OUTPUT_PDF }}
+          if-no-files-found: error
+          retention-days: 1
+
+  build-checklist:
+    needs: build-pdf
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Download generated report PDF
+        uses: actions/download-artifact@v7
+        with:
+          name: incident-report-pdf
+          path: ${{ env.OUTPUT_DIR }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Validate checklist sources
+        run: |
+          PYTHONPATH=./scripts python scripts/validate_sources.py \
+            --customer ./checklist_for_customer.md \
+            --reporter ./checklist_for_reporter.md
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Verify generated report PDF
+        run: test -f "$OUTPUT_DIR/$OUTPUT_PDF"
+
+      - name: Build HTML site
+        run: |
+          rm -rf dist
+          PYTHONPATH=./scripts python scripts/build_site.py \
+            --customer ./checklist_for_customer.md \
+            --reporter ./checklist_for_reporter.md \
+            --checklist-template ./templates/checklist.html \
+            --landing-template ./templates/landing.html \
+            --output-dir ./dist \
+            --pdf "$OUTPUT_DIR/$OUTPUT_PDF"
+
+      - name: Commit generated report and checklist files
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$OUTPUT_DIR/$OUTPUT_PDF" dist
+
+          if git diff --cached --quiet; then
+            echo "Generated files are already up to date."
+          else
+            git commit -m "build: update generated report assets [skip ci]"
+            git push origin HEAD:main
+          fi
+
+      - name: Upload generated HTML
+        uses: actions/upload-artifact@v7
+        with:
+          name: checklist-html
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Configure GitHub Pages
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  deploy:
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-checklist
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

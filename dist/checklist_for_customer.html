@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>インシデント調査報告書作成依頼時のチェックリスト（ユーザー向け）</title>
+  <style>
+    :root {
+      --color-key-50: #e8f1fe;
+      --color-key-100: #d9e6ff;
+      --color-key-200: #c5d7fb;
+      --color-key-900: #0017c1;
+      --color-key-1000: #00118f;
+      --color-key-1200: #000060;
+      --color-success-50: #e6f5ec;
+      --color-success-700: #1d8b56;
+      --color-danger-800: #ec0000;
+      --color-neutral-white: #ffffff;
+      --color-neutral-gray-50: #f2f2f2;
+      --color-neutral-gray-100: #e6e6e6;
+      --color-neutral-gray-200: #cccccc;
+      --color-neutral-gray-600: #666666;
+      --color-neutral-gray-900: #1a1a1a;
+      --color-focus: #ffd43d;
+      --font-family-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { font-family: var(--font-family-sans); }
+    body { margin: 0; background: var(--color-neutral-white); color: var(--color-neutral-gray-900); line-height: 1.7; }
+    button, input, select { font: inherit; }
+    a { color: var(--color-key-1000); text-decoration: underline; text-decoration-thickness: 0.0625rem; text-underline-offset: 0.1875rem; }
+    a:visited { color: #5109ad; }
+    a:hover { color: var(--color-key-900); text-decoration-thickness: 0.1875rem; }
+    :focus-visible { outline: 0.25rem solid #000; outline-offset: 0.125rem; border-radius: 0.25rem; box-shadow: 0 0 0 0.125rem var(--color-focus); }
+    code { padding: 0.125rem 0.375rem; border: 1px solid var(--color-neutral-gray-200); border-radius: 0.25rem; background: var(--color-neutral-gray-50); overflow-wrap: anywhere; }
+    .page { width: min(1500px, calc(100% - 4rem)); margin: 2rem auto 5rem; }
+    .toolbar { position: sticky; top: 0; z-index: 20; margin-bottom: 2rem; padding: 1.5rem; border-top: 0.5rem solid var(--color-key-900); border-bottom: 1px solid var(--color-neutral-gray-200); background: var(--color-neutral-white); }
+    .toolbar-top, .toolbar-controls, .progress-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+    .toolbar-top { justify-content: space-between; }
+    .toolbar-title { margin: 0.5rem 0 0; font-size: 1.25rem; line-height: 1.6; }
+    .toolbar-controls, .progress-grid { margin-top: 1.25rem; }
+    .home-link { font-weight: 700; white-space: nowrap; }
+    .button-group { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .button { display: inline-flex; min-width: 6rem; min-height: 3rem; align-items: center; justify-content: center; padding: 0.5rem 1rem; border: 1px solid currentcolor; border-radius: 0.5rem; background: var(--color-neutral-white); color: var(--color-key-900); cursor: pointer; font-weight: 700; letter-spacing: 0.02em; text-align: center; text-decoration: none; }
+    .button:hover { background: var(--color-key-200); color: var(--color-key-1000); text-decoration: underline; text-decoration-thickness: 0.0625rem; }
+    .button:active { background: var(--color-key-100); color: var(--color-key-1200); }
+    .button.danger { color: var(--color-danger-800); }
+    .control { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; }
+    .control.is-hidden { display: none; }
+    .control input[type="search"], .control select { min-height: 3rem; padding: 0.5rem 0.75rem; border: 1px solid var(--color-neutral-gray-600); border-radius: 0.5rem; background: var(--color-neutral-white); color: var(--color-neutral-gray-900); font-weight: 400; }
+    .control input[type="search"] { width: min(32rem, 55vw); }
+    progress { width: min(34rem, 65vw); height: 1rem; accent-color: var(--color-key-900); }
+    main { padding: clamp(1.5rem, 3vw, 2.5rem); border-top: 0.25rem solid var(--color-key-900); }
+    h1, h2, h3, h4 { color: var(--color-neutral-gray-900); font-weight: 700; }
+    h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 2.8125rem); line-height: 1.4; letter-spacing: 0.01em; }
+    h2, h3, h4 { scroll-margin-top: 14rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-neutral-gray-200); }
+    h2 { margin-top: 2.5rem; font-size: 1.625rem; line-height: 1.5; letter-spacing: 0.02em; }
+    h3 { margin-top: 2rem; font-size: 1.375rem; line-height: 1.5; letter-spacing: 0.02em; }
+    h4 { margin-top: 1.5rem; font-size: 1.125rem; line-height: 1.6; border-bottom-style: dashed; }
+    .section-toggle {
+      float: right;
+      margin-left: 0.75rem;
+      border: 0;
+      background: transparent;
+      color: var(--color-key-1000);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .table-wrap {
+      width: 100%;
+      margin: 1rem 0 2rem;
+      overflow-x: auto;
+      border: 1px solid var(--color-neutral-gray-200);
+      border-radius: 0.5rem;
+    }
+    table {
+      width: 100%;
+      min-width: 760px;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background: var(--color-neutral-white);
+    }
+    th, td {
+      box-sizing: border-box;
+      padding: 0.875rem 1rem;
+      border-right: 1px solid var(--color-neutral-gray-200);
+      border-bottom: 1px solid var(--color-neutral-gray-200);
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      position: static;
+      top: auto;
+      z-index: auto;
+      background: var(--color-neutral-gray-50);
+      white-space: nowrap;
+    }
+    col.col-number { width: 7.5rem; }
+    col.col-requirement { width: 6rem; }
+    .columns-3 col.col-item { width: 31%; }
+    .columns-4 col.col-item { width: 28%; }
+    .col-number, .col-requirement { white-space: nowrap; }
+    .col-item, .col-detail { min-width: 0; }
+    thead th {
+      vertical-align: top;
+      padding: 0.875rem 1rem;
+    }
+    thead th.col-item { white-space: normal; }
+    tbody tr { transition: background-color 120ms ease, opacity 120ms ease; }
+    tbody tr:hover { background: var(--color-key-50); }
+    tbody tr.is-done {
+      background: var(--color-success-50);
+      box-shadow: inset 0.25rem 0 0 var(--color-success-700);
+    }
+    tbody tr.is-hidden { display: none; }
+    .check-control {
+      display: grid;
+      grid-template-columns: 1.45rem minmax(14rem, 1fr);
+      gap: 0.55rem;
+      align-items: start;
+      cursor: pointer;
+    }
+    .row-check {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .check-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-top: 0.1rem;
+      border: 2px solid var(--color-neutral-gray-600);
+      border-radius: 0.25rem;
+      background: var(--color-neutral-white);
+    }
+    .row-check:focus-visible + .check-mark {
+      outline: 0.25rem solid #000;
+      outline-offset: 0.125rem;
+      box-shadow: 0 0 0 0.125rem var(--color-focus);
+    }
+    .row-check:checked + .check-mark {
+      border-color: var(--color-success-700);
+      background: var(--color-success-700);
+    }
+    .row-check:checked + .check-mark::after {
+      content: "✓";
+      color: #ffffff;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .cell-content { min-width: 0; }
+    .no-results {
+      display: none;
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px dashed var(--color-neutral-gray-600);
+      border-radius: 0.5rem;
+      color: var(--color-neutral-gray-600);
+      text-align: center;
+    }
+    .no-results.is-visible { display: block; }
+    .meta {
+      color: var(--color-neutral-gray-600);
+      font-size: 0.875rem;
+      overflow-wrap: anywhere;
+    }
+    .screen-reader-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 2rem, 1500px); margin-top: 1rem; }
+      .toolbar { position: static; }
+      th { position: static; }
+      main { padding: 1.25rem 0; }
+      .control { width: 100%; align-items: stretch; flex-direction: column; }
+      .control input[type="search"], .control select { width: 100%; }
+      progress { width: 100%; }
+      .button-group { display: grid; grid-template-columns: 1fr; width: 100%; }
+      .button { width: 100%; }
+    }
+    @media print {
+      :root { color-scheme: light; }
+      body { background: #fff; color: #000; }
+      .page { width: 100%; margin: 0; }
+      .toolbar, .meta, .section-toggle, .no-results { display: none !important; }
+      main { border: 0; padding: 0; }
+      .table-wrap { overflow: visible; break-inside: avoid; }
+      table { min-width: 0; font-size: 9pt; }
+      th { position: static; background: #eee; }
+      tbody tr.is-hidden { display: table-row; }
+      a { color: #000; text-decoration: none; }
+    }
+  </style>
+</head>
+<body data-document-id="checklist_for_customer">
+  <div class="page">
+    <section class="toolbar" aria-label="チェックリスト操作">
+      <div class="toolbar-top">
+        <div>
+          <a class="home-link" href="./index.html">Home</a>
+          <h2 class="toolbar-title">チェック状況</h2>
+        </div>
+        <div class="button-group">
+          <button class="button" id="exportButton" type="button">結果を保存</button>
+          <button class="button" id="importButton" type="button">結果を読み込み</button>
+          <button class="button" id="printButton" type="button">印刷</button>
+          <button class="button danger" id="resetButton" type="button">リセット</button>
+          <input id="importFile" class="screen-reader-only" type="file" accept="application/json,json">
+        </div>
+      </div>
+      <div class="toolbar-controls">
+        <label class="control">
+          <span>検索</span>
+          <input id="searchInput" type="search" placeholder="項番、項目、詳細を検索">
+        </label>
+        <label class="control">
+          <span>状態</span>
+          <select id="statusFilter">
+            <option value="all">すべて</option>
+            <option value="open">未確認</option>
+            <option value="done">確認済み</option>
+          </select>
+        </label>
+        <label class="control is-hidden">
+          <span>区分</span>
+          <select id="requirementFilter">
+            <option value="all">すべて</option>
+            
+          </select>
+        </label>
+      </div>
+      <div class="progress-grid">
+        <span id="progressText">0 / 58 件</span>
+        <progress id="progressBar" value="0" max="58">0%</progress>
+        <span id="visibleText" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <main id="checklistContent">
+      <h1 id="インシデント調査報告書作成依頼時のチェックリストユーザー向け">インシデント調査報告書作成依頼時のチェックリスト（ユーザー向け）</h1>
+<h2 id="チェックリストの位置づけ">チェックリストの位置づけ</h2>
+<p>本チェックリストは、調査を依頼する際の合意事項と、報告書を受領する際に最低限確認すべき事項を整理するためのものです。 インシデント調査や報告書の完全な正しさをチェックできるものではありません。</p>
+<p>調査そのものの技術的な品質、調査範囲の選定、調査目的と調査結果の整合性、エビデンスの妥当性、再発防止策の妥当性などの精査には専門的な知識が必要になります。 報告書の技術的観点のレビューに懸念がある場合は、専門家への相談（JPCERT/CCなど）を検討してください。</p>
+<h2 id="1-調査方針の合意">1. 調査方針の合意</h2>
+<div class="table-wrap">
+<table class="checklist-table columns-3">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+<col class="col-detail">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+<th scope="col" class="col-detail">詳細</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="18749c1438172bc23c93" data-item-number="1-1" data-requirement="区分なし" data-search="1-1 調査目的と報告書の利用目的 - 何を明らかにするための調査かを整理します。 - 調査結果を、復旧判断、再発防止、経営判断、法令対応、関係者への説明、被害公表など、どの用途に使用するかを組織内で確認します。">
+<td class="col-number">1-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="18749c1438172bc23c93" data-item-number="1-1" aria-label="1-1 調査目的と報告書の利用目的"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">調査目的と報告書の利用目的</span></label>
+</td>
+<td class="col-detail">- 何を明らかにするための調査かを整理します。<br>- 調査結果を、復旧判断、再発防止、経営判断、法令対応、関係者への説明、被害公表など、どの用途に使用するかを組織内で確認します。</td>
+</tr>
+<tr data-row-id="c4c7bbe18436ffb34f35" data-item-number="1-2" data-requirement="区分なし" data-search="1-2 優先確認事項 - 侵入経路特定、侵害範囲特定、情報漏えいの有無確認、封じ込め方法確認、復旧方法のサポートなど、優先して確認する事項を合意します。 - 侵入経路特定や情報漏えいの有無は、エビデンス不足により特定できない可能性があります。 - 優先順位を決める際は、業務への影響、証拠保全への影響、調査期間について説明を受け判断します。 - 復旧を優先することで証拠が失われる可能性や、調査を優先することで業務再開が遅れる可能性など、選択に伴う影響を確認します。 - なお、調査の目的によっては、事前に優先順位を決めずに調査を進める場合もあります。">
+<td class="col-number">1-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="c4c7bbe18436ffb34f35" data-item-number="1-2" aria-label="1-2 優先確認事項"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">優先確認事項</span></label>
+</td>
+<td class="col-detail">- 侵入経路特定、侵害範囲特定、情報漏えいの有無確認、封じ込め方法確認、復旧方法のサポートなど、優先して確認する事項を合意します。<br>  - 侵入経路特定や情報漏えいの有無は、エビデンス不足により特定できない可能性があります。<br>- 優先順位を決める際は、業務への影響、証拠保全への影響、調査期間について説明を受け判断します。<br>- 復旧を優先することで証拠が失われる可能性や、調査を優先することで業務再開が遅れる可能性など、選択に伴う影響を確認します。<br> - なお、調査の目的によっては、事前に優先順位を決めずに調査を進める場合もあります。</td>
+</tr>
+<tr data-row-id="787e898d2ca941854ac1" data-item-number="1-3" data-requirement="区分なし" data-search="1-3 報告書の必要性と形式 - 報告書の用途が決まっておらず、インシデント調査から確認したい事項が明確な場合は、口頭説明や簡易報告で足りることがあります。 - 次のように報告書の利用目的が決まっている場合は、正式な報告書の作成を検討します。 1. 監督官庁、保険会社、取引先、親会社、関係会社、内部報告などへの説明 2. 被害公表、法的対応、経営判断、監査 3. 将来の再調査や再発防止策の管理 - 正式な報告書を作成しない場合も、その理由、最終成果物として共有される内容については合意します。">
+<td class="col-number">1-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="787e898d2ca941854ac1" data-item-number="1-3" aria-label="1-3 報告書の必要性と形式"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">報告書の必要性と形式</span></label>
+</td>
+<td class="col-detail">- 報告書の用途が決まっておらず、インシデント調査から確認したい事項が明確な場合は、口頭説明や簡易報告で足りることがあります。<br>- 次のように報告書の利用目的が決まっている場合は、正式な報告書の作成を検討します。<br>  1. 監督官庁、保険会社、取引先、親会社、関係会社、内部報告などへの説明<br>  2. 被害公表、法的対応、経営判断、監査<br> 3. 将来の再調査や再発防止策の管理<br>- 正式な報告書を作成しない場合も、その理由、最終成果物として共有される内容については合意します。</td>
+</tr>
+<tr data-row-id="83e535c20f6c4a15adb3" data-item-number="1-4" data-requirement="区分なし" data-search="1-4 インシデント調査の範囲と調査手法の説明 - 調査対象システム、対象ログ、対象期間とその選定理由を確認します。 - 採用する調査手法について、選定理由、その手法で確認できる事項、確認できない事項の説明を受けます。 - EDRなどのセキュリティ製品を導入し、該当製品ベンダーに調査を依頼する場合は、セキュリティ製品から収集した情報が調査対象となることがあります。">
+<td class="col-number">1-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="83e535c20f6c4a15adb3" data-item-number="1-4" aria-label="1-4 インシデント調査の範囲と調査手法の説明"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">インシデント調査の範囲と調査手法の説明</span></label>
+</td>
+<td class="col-detail">- 調査対象システム、対象ログ、対象期間とその選定理由を確認します。<br>- 採用する調査手法について、選定理由、その手法で確認できる事項、確認できない事項の説明を受けます。<br>- EDRなどのセキュリティ製品を導入し、該当製品ベンダーに調査を依頼する場合は、セキュリティ製品から収集した情報が調査対象となることがあります。</td>
+</tr>
+<tr data-row-id="8732d7c6139a4be25b23" data-item-number="1-5" data-requirement="区分なし" data-search="1-5 調査で判断できない事項 - 判断できない可能性がある事項について、次の内容が説明されているか確認します。 1. 判断できない原因（どのログ・システム・期間が不足しているかなど） 2. 判断材料の不足が調査にどのような影響を与えるか 3. 追加調査によって確認できる可能性はあるか">
+<td class="col-number">1-5</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="8732d7c6139a4be25b23" data-item-number="1-5" aria-label="1-5 調査で判断できない事項"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">調査で判断できない事項</span></label>
+</td>
+<td class="col-detail">- 判断できない可能性がある事項について、次の内容が説明されているか確認します。<br>  1. 判断できない原因（どのログ・システム・期間が不足しているかなど）<br>  2. 判断材料の不足が調査にどのような影響を与えるか<br>  3. 追加調査によって確認できる可能性はあるか</td>
+</tr>
+<tr data-row-id="8a6faa75a7fab67bb8fa" data-item-number="1-6" data-requirement="区分なし" data-search="1-6 報告項目と最低限必要な内容 - 報告書の提出を依頼する場合は、少なくとも次の内容を含めるよう合意します。 1. エグゼクティブサマリー（インシデント概要） 2. インシデントの原因（初期侵入原因） 3. 影響範囲（被害拡大） 4. 被害内容 5. 再発防止策 - 簡易報告の場合も、必要な項目と省略する項目を事前に合意します。">
+<td class="col-number">1-6</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="8a6faa75a7fab67bb8fa" data-item-number="1-6" aria-label="1-6 報告項目と最低限必要な内容"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">報告項目と最低限必要な内容</span></label>
+</td>
+<td class="col-detail">- 報告書の提出を依頼する場合は、少なくとも次の内容を含めるよう合意します。<br>  1. エグゼクティブサマリー（インシデント概要）<br>  2. インシデントの原因（初期侵入原因）<br>  3. 影響範囲（被害拡大）<br>  4. 被害内容<br>  5. 再発防止策<br>- 簡易報告の場合も、必要な項目と省略する項目を事前に合意します。</td>
+</tr>
+<tr data-row-id="51d3156fcd2968b59bc4" data-item-number="1-7" data-requirement="区分なし" data-search="1-7 報告の形式、頻度、期限、手段 - 中間報告、最終報告、メールでの速報など、報告方法と期限を合意します。 - 報告の頻度を増やすことで、調査の進捗を妨げる恐れがあるため、不必要な報告の機会を設けないようにします。 - 次のような状況が発生した場合に速報・臨時報告を受けることが可能か確認します。 1. 新たな侵害対象が確認された 2. 情報漏えいの評価（情報漏えいを確認等）が変化した 3. 封じ込め、復旧ステータスの再検討（新規事実による封じ込め不十分等）が必要になった 4. 調査範囲、追加費用、完了予定の変更が必要になった - あらかじめ、連絡・報告手段（メール、オンラインミーティングなど）を決めておくと、スムーズな意思疎通につながります。">
+<td class="col-number">1-7</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="51d3156fcd2968b59bc4" data-item-number="1-7" aria-label="1-7 報告の形式、頻度、期限、手段"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">報告の形式、頻度、期限、手段</span></label>
+</td>
+<td class="col-detail">- 中間報告、最終報告、メールでの速報など、報告方法と期限を合意します。<br>- 報告の頻度を増やすことで、調査の進捗を妨げる恐れがあるため、不必要な報告の機会を設けないようにします。<br>- 次のような状況が発生した場合に速報・臨時報告を受けることが可能か確認します。<br>  1. 新たな侵害対象が確認された<br> 2. 情報漏えいの評価（情報漏えいを確認等）が変化した<br>  3. 封じ込め、復旧ステータスの再検討（新規事実による封じ込め不十分等）が必要になった<br>  4. 調査範囲、追加費用、完了予定の変更が必要になった<br>- あらかじめ、連絡・報告手段（メール、オンラインミーティングなど）を決めておくと、スムーズな意思疎通につながります。</td>
+</tr>
+<tr data-row-id="a62abaa7669a6558f4a5" data-item-number="1-8" data-requirement="区分なし" data-search="1-8 報告書の共有範囲 - 報告書を監督官庁、警察、保険会社、取引先、親会社などへ提供する可能性がある場合は、共有先と利用目的を調査ベンダーに説明します。 - 報告書の利用範囲、第三者提供、二次利用の可否を確認します。">
+<td class="col-number">1-8</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="a62abaa7669a6558f4a5" data-item-number="1-8" aria-label="1-8 報告書の共有範囲"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">報告書の共有範囲</span></label>
+</td>
+<td class="col-detail">- 報告書を監督官庁、警察、保険会社、取引先、親会社などへ提供する可能性がある場合は、共有先と利用目的を調査ベンダーに説明します。<br>- 報告書の利用範囲、第三者提供、二次利用の可否を確認します。</td>
+</tr>
+<tr data-row-id="ef9b46c34b5b809d74c5" data-item-number="1-9" data-requirement="区分なし" data-search="1-9 提出物に関する問い合わせ対応 - 報告書や添付資料の納品後に、どの範囲まで問い合わせ対応を受けられるか確認します。 - 対応窓口、対応期間、追加費用の有無を確認します。">
+<td class="col-number">1-9</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="ef9b46c34b5b809d74c5" data-item-number="1-9" aria-label="1-9 提出物に関する問い合わせ対応"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">提出物に関する問い合わせ対応</span></label>
+</td>
+<td class="col-detail">- 報告書や添付資料の納品後に、どの範囲まで問い合わせ対応を受けられるか確認します。<br>- 対応窓口、対応期間、追加費用の有無を確認します。</td>
+</tr>
+<tr data-row-id="f40051ecbd71d7aa1e7c" data-item-number="1-10" data-requirement="区分なし" data-search="1-10 合意事項を文書として受領 - 合意事項について認識の齟齬が発生しないように口頭だけでなく、メール等記録の残る形で受領します。">
+<td class="col-number">1-10</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="f40051ecbd71d7aa1e7c" data-item-number="1-10" aria-label="1-10 合意事項を文書として受領"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">合意事項を文書として受領</span></label>
+</td>
+<td class="col-detail">- 合意事項について認識の齟齬が発生しないように口頭だけでなく、メール等記録の残る形で受領します。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="2-調査結果報告書等のレビュー">2. 調査結果（報告書等）のレビュー</h2>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="e2da0514afbb60c4eb58" data-item-number="2-1" data-requirement="区分なし" data-search="2-1 合意した調査目的に含まれていた事項が報告書から抜けていないか">
+<td class="col-number">2-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="e2da0514afbb60c4eb58" data-item-number="2-1" aria-label="2-1 合意した調査目的に含まれていた事項が報告書から抜けていないか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">合意した調査目的に含まれていた事項が報告書から抜けていないか</span></label>
+</td>
+</tr>
+<tr data-row-id="5f62706f043f679fa3be" data-item-number="2-2" data-requirement="区分なし" data-search="2-2 合意した調査目的ごとに、回答または回答できない理由が記載されているか">
+<td class="col-number">2-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="5f62706f043f679fa3be" data-item-number="2-2" aria-label="2-2 合意した調査目的ごとに、回答または回答できない理由が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">合意した調査目的ごとに、回答または回答できない理由が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="0984c88c5670e117ed32" data-item-number="2-3" data-requirement="区分なし" data-search="2-3 エグゼクティブサマリーと各章の説明やタイムラインが矛盾していないか">
+<td class="col-number">2-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="0984c88c5670e117ed32" data-item-number="2-3" aria-label="2-3 エグゼクティブサマリーと各章の説明やタイムラインが矛盾していないか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">エグゼクティブサマリーと各章の説明やタイムラインが矛盾していないか</span></label>
+</td>
+</tr>
+<tr data-row-id="4564928b5c5b6a1ff409" data-item-number="2-4" data-requirement="区分なし" data-search="2-4 調査対象システム、対象ログ、対象期間、および調査対象外となったシステム、ログ、期間等が記載されているか">
+<td class="col-number">2-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="4564928b5c5b6a1ff409" data-item-number="2-4" aria-label="2-4 調査対象システム、対象ログ、対象期間、および調査対象外となったシステム、ログ、期間等が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">調査対象システム、対象ログ、対象期間、および調査対象外となったシステム、ログ、期間等が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="c95b59f69f0b666eaf61" data-item-number="2-5" data-requirement="区分なし" data-search="2-5 主要な結論について、証拠ID、ログ抜粋、対象システム、日時など根拠を追跡できる情報が提示されているか">
+<td class="col-number">2-5</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="c95b59f69f0b666eaf61" data-item-number="2-5" aria-label="2-5 主要な結論について、証拠ID、ログ抜粋、対象システム、日時など根拠を追跡できる情報が提示されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">主要な結論について、証拠ID、ログ抜粋、対象システム、日時など根拠を追跡できる情報が提示されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="27db3845d2eee765df37" data-item-number="2-6" data-requirement="区分なし" data-search="2-6 ログ不足や暗号化、ファイル削除等によって調査できない事項があった場合、その説明が記載されているか">
+<td class="col-number">2-6</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="27db3845d2eee765df37" data-item-number="2-6" aria-label="2-6 ログ不足や暗号化、ファイル削除等によって調査できない事項があった場合、その説明が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">ログ不足や暗号化、ファイル削除等によって調査できない事項があった場合、その説明が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="a37811ca97e6b5076a27" data-item-number="2-7" data-requirement="区分なし" data-search="2-7 判断できない事項があった場合、不足情報、残るリスク・影響が記載されているか">
+<td class="col-number">2-7</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="a37811ca97e6b5076a27" data-item-number="2-7" aria-label="2-7 判断できない事項があった場合、不足情報、残るリスク・影響が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">判断できない事項があった場合、不足情報、残るリスク・影響が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="872ae3c5f406c40aac5e" data-item-number="2-8" data-requirement="区分なし" data-search="2-8 追加調査が推奨される事項がある場合は、目的、優先度が記載されているか">
+<td class="col-number">2-8</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="872ae3c5f406c40aac5e" data-item-number="2-8" aria-label="2-8 追加調査が推奨される事項がある場合は、目的、優先度が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">追加調査が推奨される事項がある場合は、目的、優先度が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="2ec24295543e4e5b8459" data-item-number="2-9" data-requirement="区分なし" data-search="2-9 報告内容に関する問い合わせ先が記載されているか">
+<td class="col-number">2-9</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="2ec24295543e4e5b8459" data-item-number="2-9" aria-label="2-9 報告内容に関する問い合わせ先が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">報告内容に関する問い合わせ先が記載されているか</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="21-封じ込め根絶復旧依頼している場合">2.1. 封じ込め、根絶、復旧［依頼している場合］</h3>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="aad3590e328055ceddaf" data-item-number="2.1-1" data-requirement="区分なし" data-search="2.1-1 各対応が、どの調査結果に対応するか明記されているか">
+<td class="col-number">2.1-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="aad3590e328055ceddaf" data-item-number="2.1-1" aria-label="2.1-1 各対応が、どの調査結果に対応するか明記されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">各対応が、どの調査結果に対応するか明記されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="f5953fa0265d0c24dc65" data-item-number="2.1-2" data-requirement="区分なし" data-search="2.1-2 各対応の目的、対象、優先度、期待する効果が記載されているか">
+<td class="col-number">2.1-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="f5953fa0265d0c24dc65" data-item-number="2.1-2" aria-label="2.1-2 各対応の目的、対象、優先度、期待する効果が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">各対応の目的、対象、優先度、期待する効果が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="e5be6c33016be8e6a48f" data-item-number="2.1-3" data-requirement="区分なし" data-search="2.1-3 業務、証拠保全、復旧期間への影響が記載されているか">
+<td class="col-number">2.1-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="e5be6c33016be8e6a48f" data-item-number="2.1-3" aria-label="2.1-3 業務、証拠保全、復旧期間への影響が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">業務、証拠保全、復旧期間への影響が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="24fff708e7e0d62c1347" data-item-number="2.1-4" data-requirement="区分なし" data-search="2.1-4 実施に伴うリスクや、実施前に確認すべき依存関係が記載されているか">
+<td class="col-number">2.1-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="24fff708e7e0d62c1347" data-item-number="2.1-4" aria-label="2.1-4 実施に伴うリスクや、実施前に確認すべき依存関係が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">実施に伴うリスクや、実施前に確認すべき依存関係が記載されているか</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="22-再発防止策">2.2. 再発防止策</h3>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="ebf8355513ee87508a60" data-item-number="2.2-1" data-requirement="区分なし" data-search="2.2-1 各対策が、どの調査結果または調査上の課題に対応するか明記されているか">
+<td class="col-number">2.2-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="ebf8355513ee87508a60" data-item-number="2.2-1" aria-label="2.2-1 各対策が、どの調査結果または調査上の課題に対応するか明記されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">各対策が、どの調査結果または調査上の課題に対応するか明記されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="eb8c80b7b50faa9e75ab" data-item-number="2.2-2" data-requirement="区分なし" data-search="2.2-2 優先度、期待する効果、実施上の注意が記載されているか">
+<td class="col-number">2.2-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="eb8c80b7b50faa9e75ab" data-item-number="2.2-2" aria-label="2.2-2 優先度、期待する効果、実施上の注意が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">優先度、期待する効果、実施上の注意が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="140aacdb629315a76c62" data-item-number="2.2-3" data-requirement="区分なし" data-search="2.2-3 一般的な推奨事項だけでなく、当該事案で確認された内容に基づく対策が含まれているか">
+<td class="col-number">2.2-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="140aacdb629315a76c62" data-item-number="2.2-3" aria-label="2.2-3 一般的な推奨事項だけでなく、当該事案で確認された内容に基づく対策が含まれているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">一般的な推奨事項だけでなく、当該事案で確認された内容に基づく対策が含まれているか</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="23-ioc">2.3. IoC</h3>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="3e3ecd6133e21ba41f1f" data-item-number="2.3-1" data-requirement="区分なし" data-search="2.3-1 インシデント調査の過程で確認されたIoCが記載されているか">
+<td class="col-number">2.3-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="3e3ecd6133e21ba41f1f" data-item-number="2.3-1" aria-label="2.3-1 インシデント調査の過程で確認されたIoCが記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">インシデント調査の過程で確認されたIoCが記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="d3879b23673c705b17c3" data-item-number="2.3-2" data-requirement="区分なし" data-search="2.3-2 各IoCについて、種別、値、概要が記載されているか">
+<td class="col-number">2.3-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="d3879b23673c705b17c3" data-item-number="2.3-2" aria-label="2.3-2 各IoCについて、種別、値、概要が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">各IoCについて、種別、値、概要が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="7636831c1259bfc9169f" data-item-number="2.3-3" data-requirement="区分なし" data-search="2.3-3 そのまま監視や検索へ利用できる形式で提供されているか（報告書とは別に、テキストやExcelでIoCのみ受領することで、システムへの適用が容易になる場合があります）">
+<td class="col-number">2.3-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="7636831c1259bfc9169f" data-item-number="2.3-3" aria-label="2.3-3 そのまま監視や検索へ利用できる形式で提供されているか（報告書とは別に、テキストやExcelでIoCのみ受領することで、システムへの適用が容易になる場合があります）"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">そのまま監視や検索へ利用できる形式で提供されているか（報告書とは別に、テキストやExcelでIoCのみ受領することで、システムへの適用が容易になる場合があります）</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="24-脅威インテリジェンス調査依頼している場合">2.4. 脅威インテリジェンス調査［依頼している場合］</h3>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="bbbb98a20cb993ff4842" data-item-number="2.4-1" data-requirement="区分なし" data-search="2.4-1 攻撃関連のIPアドレス、ドメイン、URL、ハッシュ値などについて、外部情報などを用いて確認した結果が記載されているか">
+<td class="col-number">2.4-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="bbbb98a20cb993ff4842" data-item-number="2.4-1" aria-label="2.4-1 攻撃関連のIPアドレス、ドメイン、URL、ハッシュ値などについて、外部情報などを用いて確認した結果が記載されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">攻撃関連のIPアドレス、ドメイン、URL、ハッシュ値などについて、外部情報などを用いて確認した結果が記載されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="9b22c549a28f0ca240d4" data-item-number="2.4-2" data-requirement="区分なし" data-search="2.4-2 攻撃アクター名やキャンペーン名を記載する場合、その判断根拠、情報源、確度が示されているか">
+<td class="col-number">2.4-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="9b22c549a28f0ca240d4" data-item-number="2.4-2" aria-label="2.4-2 攻撃アクター名やキャンペーン名を記載する場合、その判断根拠、情報源、確度が示されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">攻撃アクター名やキャンペーン名を記載する場合、その判断根拠、情報源、確度が示されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="ae7294b08790196c2253" data-item-number="2.4-3" data-requirement="区分なし" data-search="2.4-3 類似事例の記事、ニュース、レポートなどの参考情報が提示されているか">
+<td class="col-number">2.4-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="ae7294b08790196c2253" data-item-number="2.4-3" aria-label="2.4-3 類似事例の記事、ニュース、レポートなどの参考情報が提示されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">類似事例の記事、ニュース、レポートなどの参考情報が提示されているか</span></label>
+</td>
+</tr>
+<tr data-row-id="75e56f83678013a0aedf" data-item-number="2.4-4" data-requirement="区分なし" data-search="2.4-4 攻撃手口、IoC、類似事例に基づいた追加調査、検知方法、再発防止策が提示されているか">
+<td class="col-number">2.4-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="75e56f83678013a0aedf" data-item-number="2.4-4" aria-label="2.4-4 攻撃手口、IoC、類似事例に基づいた追加調査、検知方法、再発防止策が提示されているか"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">攻撃手口、IoC、類似事例に基づいた追加調査、検知方法、再発防止策が提示されているか</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="3-参考報告書の詳細確認ポイント">3. ［参考］報告書の詳細確認ポイント</h2>
+<p>上記までのチェックリストで最低限の確認事項をカバーしていますが、報告書の各章についてより詳細にレビューを実施する場合は、以下を参考に実施してください。（上記項目と重複する内容が含まれます）</p>
+<h3 id="31-エグゼクティブサマリー">3.1. エグゼクティブサマリー</h3>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="3153cce8cb2e975f8f93" data-item-number="3.1-1" data-requirement="区分なし" data-search="3.1-1 インシデントが発覚した日時と、発覚したきっかけが記載されている">
+<td class="col-number">3.1-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="3153cce8cb2e975f8f93" data-item-number="3.1-1" aria-label="3.1-1 インシデントが発覚した日時と、発覚したきっかけが記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">インシデントが発覚した日時と、発覚したきっかけが記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="3ca84e52c2c008bfb169" data-item-number="3.1-2" data-requirement="区分なし" data-search="3.1-2 侵害が確認された、または疑われるシステムやアカウントが具体的に記載されている">
+<td class="col-number">3.1-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="3ca84e52c2c008bfb169" data-item-number="3.1-2" aria-label="3.1-2 侵害が確認された、または疑われるシステムやアカウントが具体的に記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">侵害が確認された、または疑われるシステムやアカウントが具体的に記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="f94d7f832521b900d9c3" data-item-number="3.1-3" data-requirement="区分なし" data-search="3.1-3 マルウェア感染、認証情報の悪用、情報漏えいなど、確認された影響が記載されている">
+<td class="col-number">3.1-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="f94d7f832521b900d9c3" data-item-number="3.1-3" aria-label="3.1-3 マルウェア感染、認証情報の悪用、情報漏えいなど、確認された影響が記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">マルウェア感染、認証情報の悪用、情報漏えいなど、確認された影響が記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="0f298c80d989747ab0c5" data-item-number="3.1-4" data-requirement="区分なし" data-search="3.1-4 確認できた事項、可能性がある事項、判断できない事項が区別されている">
+<td class="col-number">3.1-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="0f298c80d989747ab0c5" data-item-number="3.1-4" aria-label="3.1-4 確認できた事項、可能性がある事項、判断できない事項が区別されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">確認できた事項、可能性がある事項、判断できない事項が区別されている</span></label>
+</td>
+</tr>
+<tr data-row-id="209d42cafd42349aeb91" data-item-number="3.1-5" data-requirement="区分なし" data-search="3.1-5 現時点で残っているリスクが記載されている">
+<td class="col-number">3.1-5</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="209d42cafd42349aeb91" data-item-number="3.1-5" aria-label="3.1-5 現時点で残っているリスクが記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">現時点で残っているリスクが記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="c41d6b16dedf21f72b70" data-item-number="3.1-6" data-requirement="区分なし" data-search="3.1-6 封じ込め・復旧等を依頼している場合、直ちに実施すべき対応が、対象と優先順位を含めて記載されている">
+<td class="col-number">3.1-6</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="c41d6b16dedf21f72b70" data-item-number="3.1-6" aria-label="3.1-6 封じ込め・復旧等を依頼している場合、直ちに実施すべき対応が、対象と優先順位を含めて記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">封じ込め・復旧等を依頼している場合、直ちに実施すべき対応が、対象と優先順位を含めて記載されている</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="32-調査結果">3.2. 調査結果</h3>
+<h4 id="321-インシデントの原因・初期侵入">3.2.1. インシデントの原因・初期侵入</h4>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="ae32f69e31835ef28677" data-item-number="3.2.1-1" data-requirement="区分なし" data-search="3.2.1-1 侵入に利用された可能性があるシステム、アカウント、脆弱性（CVE番号など具体的事項）などが具体的に記載されている">
+<td class="col-number">3.2.1-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="ae32f69e31835ef28677" data-item-number="3.2.1-1" aria-label="3.2.1-1 侵入に利用された可能性があるシステム、アカウント、脆弱性（CVE番号など具体的事項）などが具体的に記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">侵入に利用された可能性があるシステム、アカウント、脆弱性（CVE番号など具体的事項）などが具体的に記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="4f996cb5093424b557cb" data-item-number="3.2.1-2" data-requirement="区分なし" data-search="3.2.1-2 初期侵入の根拠となるログ、設定情報、パッチ適用状況などが示されている">
+<td class="col-number">3.2.1-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="4f996cb5093424b557cb" data-item-number="3.2.1-2" aria-label="3.2.1-2 初期侵入の根拠となるログ、設定情報、パッチ適用状況などが示されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">初期侵入の根拠となるログ、設定情報、パッチ適用状況などが示されている</span></label>
+</td>
+</tr>
+<tr data-row-id="76c706288f06c461afc0" data-item-number="3.2.1-3" data-requirement="区分なし" data-search="3.2.1-3 初期侵入の原因を断定できない場合、不足している情報やログなどが記載されている">
+<td class="col-number">3.2.1-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="76c706288f06c461afc0" data-item-number="3.2.1-3" aria-label="3.2.1-3 初期侵入の原因を断定できない場合、不足している情報やログなどが記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">初期侵入の原因を断定できない場合、不足している情報やログなどが記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="9fdc705d801276a8d33b" data-item-number="3.2.1-4" data-requirement="区分なし" data-search="3.2.1-4 初期侵入の原因が推測である場合、推測である旨とその根拠が説明されている">
+<td class="col-number">3.2.1-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="9fdc705d801276a8d33b" data-item-number="3.2.1-4" aria-label="3.2.1-4 初期侵入の原因が推測である場合、推測である旨とその根拠が説明されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">初期侵入の原因が推測である場合、推測である旨とその根拠が説明されている</span></label>
+</td>
+</tr>
+<tr data-row-id="0d85fa905727f8972d85" data-item-number="3.2.1-5" data-requirement="区分なし" data-search="3.2.1-5 複数の原因が考えられる場合、それぞれの可能性が記載されている">
+<td class="col-number">3.2.1-5</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="0d85fa905727f8972d85" data-item-number="3.2.1-5" aria-label="3.2.1-5 複数の原因が考えられる場合、それぞれの可能性が記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">複数の原因が考えられる場合、それぞれの可能性が記載されている</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="322-インシデントの影響範囲">3.2.2. インシデントの影響範囲</h4>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="8e85da179a166fded5f2" data-item-number="3.2.2-1" data-requirement="区分なし" data-search="3.2.2-1 調査した各システムについて、次のいずれかが明示されている - 侵害を確認した - 侵害の痕跡は確認されなかった - ログ不足などにより判断できない">
+<td class="col-number">3.2.2-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="8e85da179a166fded5f2" data-item-number="3.2.2-1" aria-label="3.2.2-1 調査した各システムについて、次のいずれかが明示されている - 侵害を確認した - 侵害の痕跡は確認されなかった - ログ不足などにより判断できない"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">調査した各システムについて、次のいずれかが明示されている<br>- 侵害を確認した<br>- 侵害の痕跡は確認されなかった<br>- ログ不足などにより判断できない</span></label>
+</td>
+</tr>
+<tr data-row-id="49d06f076da823cd6152" data-item-number="3.2.2-2" data-requirement="区分なし" data-search="3.2.2-2 各判断の根拠となるログやファイルなどが示されている">
+<td class="col-number">3.2.2-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="49d06f076da823cd6152" data-item-number="3.2.2-2" aria-label="3.2.2-2 各判断の根拠となるログやファイルなどが示されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">各判断の根拠となるログやファイルなどが示されている</span></label>
+</td>
+</tr>
+<tr data-row-id="f8c3b9ff43ca6542b700" data-item-number="3.2.2-3" data-requirement="区分なし" data-search="3.2.2-3 侵害または悪用が確認されたアカウントや、侵害が疑われるものの調査対象外となったシステムが一覧で示されている">
+<td class="col-number">3.2.2-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="f8c3b9ff43ca6542b700" data-item-number="3.2.2-3" aria-label="3.2.2-3 侵害または悪用が確認されたアカウントや、侵害が疑われるものの調査対象外となったシステムが一覧で示されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">侵害または悪用が確認されたアカウントや、侵害が疑われるものの調査対象外となったシステムが一覧で示されている</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="323-被害内容">3.2.3. 被害内容</h4>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="e8d0417634140309603e" data-item-number="3.2.3-1" data-requirement="区分なし" data-search="3.2.3-1 マルウェア感染、アカウント情報漏えい、横展開の有無、侵害されたサービス、メール不正送信など、確認された被害が記載されている">
+<td class="col-number">3.2.3-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="e8d0417634140309603e" data-item-number="3.2.3-1" aria-label="3.2.3-1 マルウェア感染、アカウント情報漏えい、横展開の有無、侵害されたサービス、メール不正送信など、確認された被害が記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">マルウェア感染、アカウント情報漏えい、横展開の有無、侵害されたサービス、メール不正送信など、確認された被害が記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="91a051a4c04558b7e031" data-item-number="3.2.3-2" data-requirement="区分なし" data-search="3.2.3-2 被害にあっていた期間が示されている">
+<td class="col-number">3.2.3-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="91a051a4c04558b7e031" data-item-number="3.2.3-2" aria-label="3.2.3-2 被害にあっていた期間が示されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">被害にあっていた期間が示されている</span></label>
+</td>
+</tr>
+<tr data-row-id="26cab105611467ca2e2a" data-item-number="3.2.3-3" data-requirement="区分なし" data-search="3.2.3-3 情報漏えいについて、次のいずれかが明示されている - 漏えいを確認した - 漏えいした可能性がある - 漏えいを示す痕跡は確認されなかった - 判断できない">
+<td class="col-number">3.2.3-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="26cab105611467ca2e2a" data-item-number="3.2.3-3" aria-label="3.2.3-3 情報漏えいについて、次のいずれかが明示されている - 漏えいを確認した - 漏えいした可能性がある - 漏えいを示す痕跡は確認されなかった - 判断できない"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">情報漏えいについて、次のいずれかが明示されている<br>- 漏えいを確認した<br>- 漏えいした可能性がある<br>- 漏えいを示す痕跡は確認されなかった<br>- 判断できない</span></label>
+</td>
+</tr>
+<tr data-row-id="4696e5757a42162dc2bf" data-item-number="3.2.3-4" data-requirement="区分なし" data-search="3.2.3-4 情報漏えいを評価するために確認したログやデータが記載されている">
+<td class="col-number">3.2.3-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="4696e5757a42162dc2bf" data-item-number="3.2.3-4" aria-label="3.2.3-4 情報漏えいを評価するために確認したログやデータが記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">情報漏えいを評価するために確認したログやデータが記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="bb394369dc10419e25a6" data-item-number="3.2.3-5" data-requirement="区分なし" data-search="3.2.3-5 情報漏えいを確認した（または漏えいした可能性がある）場合、対象のデータの種類と保存場所が記載されている">
+<td class="col-number">3.2.3-5</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="bb394369dc10419e25a6" data-item-number="3.2.3-5" aria-label="3.2.3-5 情報漏えいを確認した（または漏えいした可能性がある）場合、対象のデータの種類と保存場所が記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">情報漏えいを確認した（または漏えいした可能性がある）場合、対象のデータの種類と保存場所が記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="8e2de392c591ab2dacf4" data-item-number="3.2.3-6" data-requirement="区分なし" data-search="3.2.3-6 インシデントに関連する外部通信が確認された場合、通信元、通信先、時刻、送信量などが記載されている">
+<td class="col-number">3.2.3-6</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="8e2de392c591ab2dacf4" data-item-number="3.2.3-6" aria-label="3.2.3-6 インシデントに関連する外部通信が確認された場合、通信元、通信先、時刻、送信量などが記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">インシデントに関連する外部通信が確認された場合、通信元、通信先、時刻、送信量などが記載されている</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="33-再発防止策">3.3. 再発防止策</h3>
+<div class="table-wrap">
+<table class="checklist-table columns-2">
+<colgroup>
+<col class="col-number">
+<col class="col-item">
+</colgroup>
+<thead><tr>
+<th scope="col" class="col-number">項番</th>
+<th scope="col" class="col-item">項目</th>
+</tr></thead>
+<tbody>
+<tr data-row-id="5ef871bc9941212ccab3" data-item-number="3.3-1" data-requirement="区分なし" data-search="3.3-1 各対策が、どの調査結果に対応しているか記載されている">
+<td class="col-number">3.3-1</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="5ef871bc9941212ccab3" data-item-number="3.3-1" aria-label="3.3-1 各対策が、どの調査結果に対応しているか記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">各対策が、どの調査結果に対応しているか記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="3dac3b14e77b99296e0b" data-item-number="3.3-2" data-requirement="区分なし" data-search="3.3-2 対策の対象となるシステム、アカウント、機器などが具体的に記載されている">
+<td class="col-number">3.3-2</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="3dac3b14e77b99296e0b" data-item-number="3.3-2" aria-label="3.3-2 対策の対象となるシステム、アカウント、機器などが具体的に記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">対策の対象となるシステム、アカウント、機器などが具体的に記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="ba8e496d427ae9b10d2b" data-item-number="3.3-3" data-requirement="区分なし" data-search="3.3-3 「高・中・低」などの優先順位が付けられている">
+<td class="col-number">3.3-3</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="ba8e496d427ae9b10d2b" data-item-number="3.3-3" aria-label="3.3-3 「高・中・低」などの優先順位が付けられている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">「高・中・低」などの優先順位が付けられている</span></label>
+</td>
+</tr>
+<tr data-row-id="921811b556077c30b9c1" data-item-number="3.3-4" data-requirement="区分なし" data-search="3.3-4 対策によって期待される効果が記載されている">
+<td class="col-number">3.3-4</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="921811b556077c30b9c1" data-item-number="3.3-4" aria-label="3.3-4 対策によって期待される効果が記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">対策によって期待される効果が記載されている</span></label>
+</td>
+</tr>
+<tr data-row-id="e214a84c3aa0522fad16" data-item-number="3.3-5" data-requirement="区分なし" data-search="3.3-5 システム停止、設定変更など、実施時の注意事項が記載されている">
+<td class="col-number">3.3-5</td>
+<td class="item-cell col-item">
+<label class="check-control" title="確認済みにする"><input class="row-check" type="checkbox" data-row-id="e214a84c3aa0522fad16" data-item-number="3.3-5" aria-label="3.3-5 システム停止、設定変更など、実施時の注意事項が記載されている"><span class="check-mark" aria-hidden="true"></span><span class="cell-content">システム停止、設定変更など、実施時の注意事項が記載されている</span></label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+      <div id="noResults" class="no-results">条件に一致する項目がありません。</div>
+    </main>
+
+    <p class="meta">
+      チェック項目: 58
+    </p>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const body = document.body;
+      const documentId = body.dataset.documentId;
+      const sourceHash = body.dataset.sourceHash;
+      const storageKey = `ir-checklist:${documentId}:checks`;
+      const rows = Array.from(document.querySelectorAll("tbody tr[data-row-id]"));
+      const checkboxes = Array.from(document.querySelectorAll(".row-check"));
+      const searchInput = document.getElementById("searchInput");
+      const statusFilter = document.getElementById("statusFilter");
+      const requirementFilter = document.getElementById("requirementFilter");
+      const progressText = document.getElementById("progressText");
+      const progressBar = document.getElementById("progressBar");
+      const visibleText = document.getElementById("visibleText");
+      const noResults = document.getElementById("noResults");
+      const importFile = document.getElementById("importFile");
+
+      function normalizeState(value) {
+        if (!value || typeof value !== "object") return {};
+        if (value.checks && typeof value.checks === "object") return value.checks;
+        return value;
+      }
+
+      function readState() {
+        try {
+          return normalizeState(JSON.parse(localStorage.getItem(storageKey) || "{}"));
+        } catch (error) {
+          console.warn("保存済み状態を読み込めませんでした。", error);
+          return {};
+        }
+      }
+
+      function writeState() {
+        const state = {};
+        for (const checkbox of checkboxes) {
+          if (checkbox.checked) state[checkbox.dataset.itemNumber] = true;
+        }
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      function applyState(rawState) {
+        const state = normalizeState(rawState);
+        for (const checkbox of checkboxes) {
+          const checked = Boolean(
+            state[checkbox.dataset.itemNumber] ?? state[checkbox.dataset.rowId]
+          );
+          checkbox.checked = checked;
+          checkbox.closest("tr").classList.toggle("is-done", checked);
+        }
+      }
+
+      function normalizedSearch(value) {
+        return value.normalize("NFKC").toLocaleLowerCase("ja");
+      }
+
+      function applyFilters() {
+        const query = normalizedSearch(searchInput.value.trim());
+        const status = statusFilter.value;
+        const requirement = requirementFilter.value;
+        let visible = 0;
+
+        for (const row of rows) {
+          const checkbox = row.querySelector(".row-check");
+          const searchText = normalizedSearch(row.dataset.search || "");
+          const matchesSearch = !query || searchText.includes(query);
+          const matchesStatus =
+            status === "all" ||
+            (status === "done" && checkbox.checked) ||
+            (status === "open" && !checkbox.checked);
+          const matchesRequirement =
+            requirement === "all" || row.dataset.requirement === requirement;
+          const show = matchesSearch && matchesStatus && matchesRequirement;
+          row.classList.toggle("is-hidden", !show);
+          if (show) visible += 1;
+        }
+
+        visibleText.textContent = `表示中: ${visible} 件`;
+        noResults.classList.toggle("is-visible", visible === 0);
+      }
+
+      function updateProgress() {
+        const done = checkboxes.filter((checkbox) => checkbox.checked).length;
+        const total = checkboxes.length;
+        const percent = total ? Math.round((done / total) * 100) : 0;
+        progressText.textContent = `${done} / ${total} 件（${percent}%）`;
+        progressBar.max = total;
+        progressBar.value = done;
+        progressBar.textContent = `${percent}%`;
+        applyFilters();
+      }
+
+      function downloadJson() {
+        const checks = {};
+        for (const checkbox of checkboxes) {
+          checks[checkbox.dataset.itemNumber] = checkbox.checked;
+        }
+        const payload = {
+          format: "ir-checklist-state",
+          documentId,
+          sourceHash,
+          exportedAt: new Date().toISOString(),
+          checks,
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {
+          type: "application/json;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${documentId}-result.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      async function importJson(file) {
+        const payload = JSON.parse(await file.text());
+        if (!payload || typeof payload !== "object") {
+          throw new Error("JSONの形式が正しくありません。");
+        }
+        if (payload.documentId && payload.documentId !== documentId) {
+          throw new Error("別のチェックリストの結果ファイルです。");
+        }
+        if (payload.sourceHash && payload.sourceHash !== sourceHash) {
+          const proceed = confirm(
+            "原稿の版が異なる結果ファイルです。項番が一致する項目だけを読み込みますか？"
+          );
+          if (!proceed) return;
+        }
+        const state = normalizeState(payload);
+        applyState(state);
+        writeState();
+        updateProgress();
+      }
+
+      for (const checkbox of checkboxes) {
+        checkbox.addEventListener("change", () => {
+          checkbox.closest("tr").classList.toggle("is-done", checkbox.checked);
+          writeState();
+          updateProgress();
+        });
+      }
+
+      searchInput.addEventListener("input", applyFilters);
+      statusFilter.addEventListener("change", applyFilters);
+      requirementFilter.addEventListener("change", applyFilters);
+      document.getElementById("exportButton").addEventListener("click", downloadJson);
+      document.getElementById("importButton").addEventListener("click", () => importFile.click());
+      document.getElementById("printButton").addEventListener("click", () => window.print());
+      document.getElementById("resetButton").addEventListener("click", () => {
+        if (!confirm("すべてのチェックを外します。よろしいですか？")) return;
+        localStorage.removeItem(storageKey);
+        applyState({});
+        updateProgress();
+      });
+      importFile.addEventListener("change", async () => {
+        const [file] = importFile.files;
+        if (!file) return;
+        try {
+          await importJson(file);
+        } catch (error) {
+          alert(error.message || "結果ファイルを読み込めませんでした。");
+        } finally {
+          importFile.value = "";
+        }
+      });
+
+      for (const heading of document.querySelectorAll("main h2, main h3, main h4")) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "section-toggle";
+        button.textContent = "▲";
+        button.setAttribute("aria-expanded", "true");
+        heading.appendChild(button);
+        button.addEventListener("click", () => {
+          const level = Number(heading.tagName.slice(1));
+          const collapsed = button.getAttribute("aria-expanded") === "true";
+          button.setAttribute("aria-expanded", String(!collapsed));
+          button.textContent = collapsed ? "▼" : "▲";
+          let node = heading.nextElementSibling;
+          while (node) {
+            if (/^H[1-6]$/.test(node.tagName) && Number(node.tagName.slice(1)) <= level) break;
+            node.hidden = collapsed;
+            node = node.nextElementSibling;
+          }
+        });
+      }
+
+      applyState(readState());
+      updateProgress();
+    })();
+  </script>
+</body>
+</html>
